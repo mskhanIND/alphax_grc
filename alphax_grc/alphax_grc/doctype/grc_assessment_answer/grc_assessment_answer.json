@@ -1,0 +1,80 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-24 14:44:15.988978",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "question_code",
+  "section_code",
+  "selected_option",
+  "reviewer_option",
+  "points",
+  "comment",
+  "reviewer_note",
+  "answered_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "question_code",
+   "fieldtype": "Data",
+   "label": "Question",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "section_code",
+   "fieldtype": "Data",
+   "label": "Section"
+  },
+  {
+   "fieldname": "selected_option",
+   "fieldtype": "Select",
+   "label": "Customer answer",
+   "options": "\nA\nB\nC\nD\nN/A",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "reviewer_option",
+   "fieldtype": "Select",
+   "label": "Reviewer-adjusted answer",
+   "options": "\nA\nB\nC\nD\nN/A",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "points",
+   "fieldtype": "Float",
+   "label": "Points",
+   "read_only": 1
+  },
+  {
+   "fieldname": "comment",
+   "fieldtype": "Small Text",
+   "label": "Customer comment"
+  },
+  {
+   "fieldname": "reviewer_note",
+   "fieldtype": "Small Text",
+   "label": "Reviewer note (internal)"
+  },
+  {
+   "fieldname": "answered_on",
+   "fieldtype": "Datetime",
+   "label": "Answered on",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-24 14:44:15.988978",
+ "modified_by": "Administrator",
+ "module": "AlphaX GRC",
+ "name": "GRC Assessment Answer",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1
+}

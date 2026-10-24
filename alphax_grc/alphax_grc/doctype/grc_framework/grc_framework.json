@@ -1,0 +1,186 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-24 14:44:15.988978",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "framework_code",
+  "framework_name",
+  "framework_name_ar",
+  "authority",
+  "authority_ar",
+  "category",
+  "version",
+  "status",
+  "sb_review",
+  "reviewed_on",
+  "reviewed_by",
+  "source_url",
+  "sb_text",
+  "description",
+  "description_ar",
+  "sectors"
+ ],
+ "fields": [
+  {
+   "fieldname": "framework_code",
+   "fieldtype": "Data",
+   "label": "Code",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "framework_name",
+   "fieldtype": "Data",
+   "label": "Name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "framework_name_ar",
+   "fieldtype": "Data",
+   "label": "Name (Arabic)"
+  },
+  {
+   "fieldname": "authority",
+   "fieldtype": "Data",
+   "label": "Authority"
+  },
+  {
+   "fieldname": "authority_ar",
+   "fieldtype": "Data",
+   "label": "Authority (Arabic)"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category",
+   "options": "Cybersecurity\nFinancial & Corporate Governance\nPrivacy & Data\nInternal Audit\nOther",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "version",
+   "fieldtype": "Data",
+   "label": "Version",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nPublished",
+   "default": "Draft",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "sb_review",
+   "fieldtype": "Section Break",
+   "label": "Applicability review"
+  },
+  {
+   "fieldname": "reviewed_on",
+   "fieldtype": "Date",
+   "label": "Applicability reviewed on",
+   "description": "Shown on the website. Leave blank until IRSAA has reviewed this entry."
+  },
+  {
+   "fieldname": "reviewed_by",
+   "fieldtype": "Link",
+   "label": "Reviewed by",
+   "options": "User"
+  },
+  {
+   "fieldname": "source_url",
+   "fieldtype": "Data",
+   "label": "Official source URL"
+  },
+  {
+   "fieldname": "sb_text",
+   "fieldtype": "Section Break",
+   "label": "Description"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "description_ar",
+   "fieldtype": "Small Text",
+   "label": "Description (Arabic)"
+  },
+  {
+   "fieldname": "sectors",
+   "fieldtype": "Table",
+   "label": "Applicable sectors",
+   "options": "GRC Framework Sector"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-24 14:44:15.988978",
+ "modified_by": "Administrator",
+ "module": "AlphaX GRC",
+ "name": "GRC Framework",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Consultant",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Reviewer",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "field:framework_code",
+ "title_field": "framework_name"
+}

@@ -1,0 +1,134 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-24 14:44:15.988978",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "assessment",
+  "organization",
+  "contact_type",
+  "followup_on",
+  "logged_by",
+  "note",
+  "next_action_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "assessment",
+   "fieldtype": "Link",
+   "label": "Assessment",
+   "options": "GRC Assessment",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "organization",
+   "fieldtype": "Link",
+   "label": "Organization",
+   "options": "GRC Organization",
+   "fetch_from": "assessment.organization",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "contact_type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Email Reminder\nPhone Call\nMeeting\nNote\nSystem Reminder",
+   "default": "Note",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "followup_on",
+   "fieldtype": "Datetime",
+   "label": "When",
+   "default": "Now",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "logged_by",
+   "fieldtype": "Link",
+   "label": "Logged by",
+   "options": "User",
+   "default": "__user"
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Text",
+   "label": "Note"
+  },
+  {
+   "fieldname": "next_action_on",
+   "fieldtype": "Date",
+   "label": "Next action on"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-24 14:44:15.988978",
+ "modified_by": "Administrator",
+ "module": "AlphaX GRC",
+ "name": "GRC Follow Up Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Consultant",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Reviewer",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:FUP-{#####}",
+ "title_field": "contact_type"
+}

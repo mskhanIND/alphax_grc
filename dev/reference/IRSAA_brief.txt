@@ -1,0 +1,61 @@
+Following our discussion, we would like to expand the existing Internal Audit Maturity Assessment app into a GRC & Audit platform built on Frappe Framework.
+The platform should cover the public website, customer self-service portal, and internal survey management workspace. The proposed domain is grc.muftaah.com or alphaxerp.com, subject to final confirmation.
+1. Public website
+Develop an English/Arabic website containing:
+Home page introducing the platform.
+GRC and audit products and services.
+Assessment and survey catalogue.
+Framework information relevant to Saudi customers, with applicability based on their sector.
+About Us, Contact, Resources and FAQs.
+Privacy Notice and Terms of Use.
+Customer Sign Up and Sign In.
+The main actions should be Start Assessment and Request Consultation.
+2. Customer registration and organization access
+The customer should be able to register using their work email, verify it through an emailed code or link, and create their organization profile.
+The first registered user becomes the organization administrator and can invite colleagues with appropriate access. Joining an existing organization must require an invitation or approval. Customers must not see or select other customer organizations.
+3. Customer self-management portal
+ left navigation, searchable tables, filters, status indicators, assigned owners and quick actions.
+The overall module scope is:
+Module	Expected functionality
+Dashboard	Pending assessments, completion progress, scorecards, risks and overdue actions
+Organization	Organization profile, departments, branches, users and responsibilities
+Assessments & Surveys	Assigned questionnaires, draft saving, evidence, submission and review tracking
+Scorecards	Overall maturity, section scores, gaps, recommendations and downloadable reports
+Control Catalog	Framework requirements, internal controls, ownership and evidence
+Risk Management	Risk register, likelihood, impact, inherent/residual risk and treatment
+Asset Risk Management	Asset register, classification, threats, vulnerabilities and related risks
+Compliance Management	Applicable requirements, compliance status, gaps and corrective actions
+Audit & Actions	Findings, action owners, deadlines and closure verification
+Security Operations	Incident and vulnerability tracking, with integrations considered separately
+Settings	Organization-specific configuration, memberships and notifications
+4. Internal survey management workspace
+Provide an internal workspace for the IRSAA GRC team to:
+Create and maintain survey templates, versions, questions and scoring rules.
+Invite customers and assign surveys.
+Allocate assessments to GRC consultants and reviewers.
+Track customers who have not started, are in progress, or have submitted.
+Schedule reminders and record follow-up history.
+Review answers and supporting evidence.
+Request clarification or return assessments for correction.
+Approve results and release customer reports.
+Monitor consultant workload, overdue reviews and overall survey performance.
+The proposed assessment workflow is:
+Draft → In Progress → Submitted → Under Review → Clarification Required → Resubmitted → Approved → Report Released
+Customers should see their submission status and required next action. Final approved reports should be distinguishable from preliminary self-assessment results.
+5. Existing assessment app
+Reuse the existing ia_maturity app where practical. The 20-question questionnaire and Excel template are the initial business reference.
+Before implementation, confirm the following differences with the assessment owner:
+Whether Q1 should cap the final maturity level.
+Whether Q20 should allow “Not Applicable.”
+Whether Q13 should be answered manually or calculated from an issue register.
+Whether every question should retain equal weighting.
+Submitted assessments must retain their questionnaire version and scoring policy so later configuration changes do not alter historical results.
+6. Security and access requirements
+Enforce organization-level permissions across portal pages, APIs, reports, exports and attachments. Internal staff should access customer records according to their assigned responsibilities.
+Include private evidence storage, audit history, controlled report access and stronger authentication for privileged users.
+Saudi framework content should be versioned and reviewed for applicability. Assessment scores must not automatically imply regulatory compliance or certification.
+7. First release priority
+Please prioritize one complete customer journey:
+Website → Registration and Email Verification → Organization Setup → 20-Question Assessment → Save/Resume → Submission → GRC Team Assignment and Review → Approved Scorecard and PDF Report
+The first release should also include reminders, customer follow-up tracking and organization access controls. Control management, compliance, risks, assets and security operations can follow in subsequent phases, with the initial architecture designed to support them.
+Please review the existing app against this scope and provide the proposed architecture, reusable components, required changes, phased development estimate and deployment requirements.

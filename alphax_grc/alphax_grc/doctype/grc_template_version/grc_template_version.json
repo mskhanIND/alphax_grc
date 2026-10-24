@@ -1,0 +1,249 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-24 14:44:15.988978",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "template",
+  "version_no",
+  "status",
+  "published_on",
+  "published_by",
+  "release_notes",
+  "sb_policy",
+  "points_a",
+  "points_b",
+  "points_c",
+  "points_d",
+  "cb_pol",
+  "weighting_method",
+  "enable_gating",
+  "allow_na",
+  "sb_intro",
+  "introduction",
+  "introduction_ar",
+  "answer_rule",
+  "answer_rule_ar",
+  "sb_content",
+  "sections",
+  "questions",
+  "bands"
+ ],
+ "fields": [
+  {
+   "fieldname": "template",
+   "fieldtype": "Link",
+   "label": "Template",
+   "options": "GRC Assessment Template",
+   "reqd": 1,
+   "set_only_once": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "version_no",
+   "fieldtype": "Data",
+   "label": "Version",
+   "reqd": 1,
+   "set_only_once": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nPublished\nRetired",
+   "default": "Draft",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "published_on",
+   "fieldtype": "Datetime",
+   "label": "Published on",
+   "read_only": 1
+  },
+  {
+   "fieldname": "published_by",
+   "fieldtype": "Link",
+   "label": "Published by",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "release_notes",
+   "fieldtype": "Small Text",
+   "label": "Release notes"
+  },
+  {
+   "fieldname": "sb_policy",
+   "fieldtype": "Section Break",
+   "label": "Scoring policy (frozen into every assessment at creation)"
+  },
+  {
+   "fieldname": "points_a",
+   "fieldtype": "Float",
+   "label": "Points for A",
+   "default": "25",
+   "reqd": 1
+  },
+  {
+   "fieldname": "points_b",
+   "fieldtype": "Float",
+   "label": "Points for B",
+   "default": "50",
+   "reqd": 1
+  },
+  {
+   "fieldname": "points_c",
+   "fieldtype": "Float",
+   "label": "Points for C",
+   "default": "75",
+   "reqd": 1
+  },
+  {
+   "fieldname": "points_d",
+   "fieldtype": "Float",
+   "label": "Points for D",
+   "default": "100",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_pol",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "weighting_method",
+   "fieldtype": "Select",
+   "label": "Weighting",
+   "options": "Equal\nSection Weights",
+   "default": "Equal"
+  },
+  {
+   "fieldname": "enable_gating",
+   "fieldtype": "Check",
+   "label": "Apply gating caps",
+   "default": "0",
+   "description": "Open decision: should Q1 cap the final level?"
+  },
+  {
+   "fieldname": "allow_na",
+   "fieldtype": "Check",
+   "label": "Allow Not Applicable where a question permits",
+   "default": "0",
+   "description": "Open decision: should Q20 allow N/A?"
+  },
+  {
+   "fieldname": "sb_intro",
+   "fieldtype": "Section Break",
+   "label": "Respondent guidance"
+  },
+  {
+   "fieldname": "introduction",
+   "fieldtype": "Small Text",
+   "label": "Introduction"
+  },
+  {
+   "fieldname": "introduction_ar",
+   "fieldtype": "Small Text",
+   "label": "Introduction (Arabic)"
+  },
+  {
+   "fieldname": "answer_rule",
+   "fieldtype": "Small Text",
+   "label": "Answer rule"
+  },
+  {
+   "fieldname": "answer_rule_ar",
+   "fieldtype": "Small Text",
+   "label": "Answer rule (Arabic)"
+  },
+  {
+   "fieldname": "sb_content",
+   "fieldtype": "Section Break",
+   "label": "Content"
+  },
+  {
+   "fieldname": "sections",
+   "fieldtype": "Table",
+   "label": "Sections",
+   "options": "GRC Template Section"
+  },
+  {
+   "fieldname": "questions",
+   "fieldtype": "Table",
+   "label": "Questions",
+   "options": "GRC Template Question"
+  },
+  {
+   "fieldname": "bands",
+   "fieldtype": "Table",
+   "label": "Maturity bands",
+   "options": "GRC Maturity Band"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-24 14:44:15.988978",
+ "modified_by": "Administrator",
+ "module": "AlphaX GRC",
+ "name": "GRC Template Version",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Consultant",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Reviewer",
+   "read": 1,
+   "write": 0,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:{template}-V{version_no}"
+}

@@ -1,0 +1,98 @@
+[
+ {
+  "id": "nca-ecc",
+  "name": "NCA Essential Cybersecurity Controls (ECC-1:2018)",
+  "name_ar": "الضوابط الأساسية للأمن السيبراني (ECC-1:2018)",
+  "authority": "National Cybersecurity Authority (NCA)",
+  "authority_ar": "الهيئة الوطنية للأمن السيبراني",
+  "version": "1:2018",
+  "description": "Mandatory cybersecurity controls for all government entities and critical national infrastructure organizations in Saudi Arabia.",
+  "description_ar": "ضوابط أمن سيبراني إلزامية لجميع الجهات الحكومية ومؤسسات البنية التحتية الحيوية في المملكة العربية السعودية.",
+  "sectors": [
+   "Government",
+   "Banking & Finance",
+   "Energy & Utilities",
+   "Healthcare",
+   "Telecommunications"
+  ],
+  "totalControls": 114,
+  "badgeColor": "bg-emerald-100 text-emerald-800 border-emerald-300",
+  "category": "Cybersecurity"
+ },
+ {
+  "id": "sama-csf",
+  "name": "SAMA Cybersecurity Framework",
+  "name_ar": "إطار العمل للأمن السيبراني (البنك المركزي السعودي)",
+  "authority": "Saudi Central Bank (SAMA)",
+  "authority_ar": "البنك المركزي السعودي (ساما)",
+  "version": "2017/2023",
+  "description": "Mandatory cybersecurity governance, risk management, and operational resilience standard for banking, fintech, and insurance entities.",
+  "description_ar": "معيار حوكمة وإدارة مخاطر ومرونة تشغيلية للأمن السيبراني إلزامي للقطاع المصرفي والتقنية المالية والتأمين.",
+  "sectors": [
+   "Banking & Finance",
+   "Insurance",
+   "Fintech",
+   "Financing Companies"
+  ],
+  "totalControls": 160,
+  "badgeColor": "bg-blue-100 text-blue-800 border-blue-300",
+  "category": "Financial & Corporate Governance"
+ },
+ {
+  "id": "cma-cgr",
+  "name": "CMA Corporate Governance Regulations",
+  "name_ar": "لائحة حوكمة الشركات (هيئة السوق المالية)",
+  "authority": "Capital Market Authority (CMA)",
+  "authority_ar": "هيئة السوق المالية",
+  "version": "2023 Updated",
+  "description": "Governance rules governing board composition, audit committee responsibilities, internal audit mandate, and disclosure for listed companies.",
+  "description_ar": "قواعد الحوكمة المنظمة لتشكيل المجلس ومسؤوليات لجنة المراجعة واختصاصات التدقيق الداخلي والإفصاح للشركات المدرجة.",
+  "sectors": [
+   "Listed Companies",
+   "Capital Market Institutions",
+   "Investment Funds"
+  ],
+  "totalControls": 98,
+  "badgeColor": "bg-amber-100 text-amber-800 border-amber-300",
+  "category": "Financial & Corporate Governance"
+ },
+ {
+  "id": "pdpl-sdaia",
+  "name": "Personal Data Protection Law (PDPL)",
+  "name_ar": "نظام حماية البيانات الشخصية ولائحته التنفيذية",
+  "authority": "SDAIA",
+  "authority_ar": "الهيئة السعودية للبيانات والذكاء الاصطناعي (سدايا)",
+  "version": "2024 Final Regulations",
+  "description": "Protects personal data privacy, regulates cross-border data transfer, mandates DPO appointments, and requires privacy impact assessments.",
+  "description_ar": "حماية خصوصية البيانات الشخصية وتنظيم نقل البيانات عبر الحدود وإلزامية تعيين مسؤول حماية البيانات وتقييم أثر الخصوصية.",
+  "sectors": [
+   "All Entities",
+   "Healthcare",
+   "Banking & Finance",
+   "E-Commerce",
+   "Government"
+  ],
+  "totalControls": 45,
+  "badgeColor": "bg-purple-100 text-purple-800 border-purple-300",
+  "category": "Privacy & Data"
+ },
+ {
+  "id": "iia-gias",
+  "name": "IIA Global Internal Audit Standards (GIAS)",
+  "name_ar": "معايير التدقيق الداخلي العالمية الصادرة عن IIA",
+  "authority": "Institute of Internal Auditors (IIA)",
+  "authority_ar": "معهد المدققين الداخليين العالمي",
+  "version": "2024 / Effective 2025",
+  "description": "New unified 5-domain structure governing the purpose, ethics, governance, management, and performance of internal audit worldwide.",
+  "description_ar": "الهيكل الجديد الموحد المكون من 5 مجالات حاكمة لغرض وأخلاقيات وحوكمة وإدارة وأداء التدقيق الداخلي عالمياً.",
+  "sectors": [
+   "All Entities",
+   "Corporate",
+   "Government",
+   "Financial Services"
+  ],
+  "totalControls": 52,
+  "badgeColor": "bg-cyan-100 text-cyan-800 border-cyan-300",
+  "category": "Internal Audit"
+ }
+]

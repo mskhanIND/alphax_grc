@@ -1,0 +1,146 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-24 14:44:15.988978",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "question_code",
+  "section_code",
+  "short_label",
+  "short_label_ar",
+  "question_text",
+  "question_text_ar",
+  "option_a",
+  "option_a_ar",
+  "option_b",
+  "option_b_ar",
+  "option_c",
+  "option_c_ar",
+  "option_d",
+  "option_d_ar",
+  "allow_na",
+  "is_gating",
+  "gate_trigger",
+  "gate_cap_level",
+  "source_ref"
+ ],
+ "fields": [
+  {
+   "fieldname": "question_code",
+   "fieldtype": "Data",
+   "label": "Code",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "section_code",
+   "fieldtype": "Data",
+   "label": "Section",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "short_label",
+   "fieldtype": "Data",
+   "label": "Short label",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "short_label_ar",
+   "fieldtype": "Data",
+   "label": "Short label (Arabic)"
+  },
+  {
+   "fieldname": "question_text",
+   "fieldtype": "Small Text",
+   "label": "Question",
+   "reqd": 1
+  },
+  {
+   "fieldname": "question_text_ar",
+   "fieldtype": "Small Text",
+   "label": "Question (Arabic)"
+  },
+  {
+   "fieldname": "option_a",
+   "fieldtype": "Small Text",
+   "label": "Option A"
+  },
+  {
+   "fieldname": "option_a_ar",
+   "fieldtype": "Small Text",
+   "label": "Option A (Arabic)"
+  },
+  {
+   "fieldname": "option_b",
+   "fieldtype": "Small Text",
+   "label": "Option B"
+  },
+  {
+   "fieldname": "option_b_ar",
+   "fieldtype": "Small Text",
+   "label": "Option B (Arabic)"
+  },
+  {
+   "fieldname": "option_c",
+   "fieldtype": "Small Text",
+   "label": "Option C"
+  },
+  {
+   "fieldname": "option_c_ar",
+   "fieldtype": "Small Text",
+   "label": "Option C (Arabic)"
+  },
+  {
+   "fieldname": "option_d",
+   "fieldtype": "Small Text",
+   "label": "Option D"
+  },
+  {
+   "fieldname": "option_d_ar",
+   "fieldtype": "Small Text",
+   "label": "Option D (Arabic)"
+  },
+  {
+   "fieldname": "allow_na",
+   "fieldtype": "Check",
+   "label": "Can be Not Applicable"
+  },
+  {
+   "fieldname": "is_gating",
+   "fieldtype": "Check",
+   "label": "Gating question"
+  },
+  {
+   "fieldname": "gate_trigger",
+   "fieldtype": "Select",
+   "label": "Gate triggers on",
+   "options": "A\nA or B",
+   "default": "A"
+  },
+  {
+   "fieldname": "gate_cap_level",
+   "fieldtype": "Data",
+   "label": "Caps maturity level at"
+  },
+  {
+   "fieldname": "source_ref",
+   "fieldtype": "Data",
+   "label": "Original question ref"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-24 14:44:15.988978",
+ "modified_by": "Administrator",
+ "module": "AlphaX GRC",
+ "name": "GRC Template Question",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1
+}

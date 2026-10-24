@@ -1,0 +1,222 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-24 14:44:15.988978",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sb_site",
+  "platform_name",
+  "provider_name",
+  "public_site_url",
+  "support_email",
+  "staff_notification_email",
+  "sb_reg",
+  "block_personal_email_domains",
+  "personal_email_domains",
+  "allowed_email_domains",
+  "verification_code_ttl_minutes",
+  "show_code_when_email_unavailable",
+  "sb_ass",
+  "default_template",
+  "max_evidence_mb",
+  "allowed_evidence_extensions",
+  "sb_rem",
+  "reminders_enabled",
+  "reminder_days_before_due",
+  "overdue_reminder_every_days",
+  "clarification_sla_days",
+  "review_sla_days",
+  "sb_rep",
+  "report_disclaimer_en",
+  "report_disclaimer_ar"
+ ],
+ "fields": [
+  {
+   "fieldname": "sb_site",
+   "fieldtype": "Section Break",
+   "label": "Platform"
+  },
+  {
+   "fieldname": "platform_name",
+   "fieldtype": "Data",
+   "label": "Platform name",
+   "default": "AlphaX GRC & Audit Platform"
+  },
+  {
+   "fieldname": "provider_name",
+   "fieldtype": "Data",
+   "label": "Provider name",
+   "default": "IRSAA Business Solutions"
+  },
+  {
+   "fieldname": "public_site_url",
+   "fieldtype": "Data",
+   "label": "Public site URL",
+   "description": "Used in email links. Leave blank to use the site's own URL."
+  },
+  {
+   "fieldname": "support_email",
+   "fieldtype": "Data",
+   "label": "Support email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "staff_notification_email",
+   "fieldtype": "Data",
+   "label": "GRC team notification email",
+   "options": "Email",
+   "description": "Receives consultation requests and new submissions."
+  },
+  {
+   "fieldname": "sb_reg",
+   "fieldtype": "Section Break",
+   "label": "Registration"
+  },
+  {
+   "fieldname": "block_personal_email_domains",
+   "fieldtype": "Check",
+   "label": "Block personal email domains",
+   "default": "1",
+   "description": "Customers must register with a work email. Turn off only for testing."
+  },
+  {
+   "fieldname": "personal_email_domains",
+   "fieldtype": "Small Text",
+   "label": "Personal email domains",
+   "default": "gmail.com,yahoo.com,hotmail.com,outlook.com,live.com,icloud.com,aol.com,proton.me,protonmail.com,gmx.com,mail.com,yandex.com,msn.com"
+  },
+  {
+   "fieldname": "allowed_email_domains",
+   "fieldtype": "Small Text",
+   "label": "Allowed email domains (optional)",
+   "description": "Comma separated. If set, only these domains can register."
+  },
+  {
+   "fieldname": "verification_code_ttl_minutes",
+   "fieldtype": "Int",
+   "label": "Verification code lifetime (minutes)",
+   "default": "15"
+  },
+  {
+   "fieldname": "show_code_when_email_unavailable",
+   "fieldtype": "Check",
+   "label": "TEST ONLY: show verification code on screen when no outgoing email is configured",
+   "default": "0",
+   "description": "Never enable on a production site."
+  },
+  {
+   "fieldname": "sb_ass",
+   "fieldtype": "Section Break",
+   "label": "Assessments"
+  },
+  {
+   "fieldname": "default_template",
+   "fieldtype": "Link",
+   "label": "Default template",
+   "options": "GRC Assessment Template"
+  },
+  {
+   "fieldname": "max_evidence_mb",
+   "fieldtype": "Int",
+   "label": "Maximum evidence file size (MB)",
+   "default": "10"
+  },
+  {
+   "fieldname": "allowed_evidence_extensions",
+   "fieldtype": "Small Text",
+   "label": "Allowed evidence file types",
+   "default": "pdf,doc,docx,xls,xlsx,ppt,pptx,png,jpg,jpeg,txt,csv"
+  },
+  {
+   "fieldname": "sb_rem",
+   "fieldtype": "Section Break",
+   "label": "Reminders and SLAs"
+  },
+  {
+   "fieldname": "reminders_enabled",
+   "fieldtype": "Check",
+   "label": "Automatic reminders enabled",
+   "default": "1"
+  },
+  {
+   "fieldname": "reminder_days_before_due",
+   "fieldtype": "Data",
+   "label": "Remind this many days before due date",
+   "default": "7,3,1",
+   "description": "Comma separated list of days."
+  },
+  {
+   "fieldname": "overdue_reminder_every_days",
+   "fieldtype": "Int",
+   "label": "Repeat overdue reminders every (days)",
+   "default": "7"
+  },
+  {
+   "fieldname": "clarification_sla_days",
+   "fieldtype": "Int",
+   "label": "Clarification response SLA (days)",
+   "default": "5"
+  },
+  {
+   "fieldname": "review_sla_days",
+   "fieldtype": "Int",
+   "label": "Review SLA (days)",
+   "default": "5"
+  },
+  {
+   "fieldname": "sb_rep",
+   "fieldtype": "Section Break",
+   "label": "Reports"
+  },
+  {
+   "fieldname": "report_disclaimer_en",
+   "fieldtype": "Small Text",
+   "label": "Report disclaimer (English)",
+   "default": "This maturity score is an assessment output based on the information supplied and reviewed. It does not constitute a regulatory compliance determination, certification or assurance opinion."
+  },
+  {
+   "fieldname": "report_disclaimer_ar",
+   "fieldtype": "Small Text",
+   "label": "Report disclaimer (Arabic)",
+   "default": "درجة النضج الواردة هنا مخرج تقييم مبني على المعلومات المقدمة والتي جرت مراجعتها، ولا تمثل حكماً بالامتثال التنظيمي ولا شهادة اعتماد ولا رأياً في التأكيد."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-24 14:44:15.988978",
+ "modified_by": "Administrator",
+ "module": "AlphaX GRC",
+ "name": "GRC Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Manager",
+   "read": 1,
+   "write": 1,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "issingle": 1
+}

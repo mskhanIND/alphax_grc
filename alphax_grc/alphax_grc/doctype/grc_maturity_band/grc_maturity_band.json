@@ -1,0 +1,71 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-24 14:44:15.988978",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "level_name",
+  "level_name_ar",
+  "min_score",
+  "max_score",
+  "color",
+  "interpretation",
+  "interpretation_ar"
+ ],
+ "fields": [
+  {
+   "fieldname": "level_name",
+   "fieldtype": "Data",
+   "label": "Level",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "level_name_ar",
+   "fieldtype": "Data",
+   "label": "Level (Arabic)"
+  },
+  {
+   "fieldname": "min_score",
+   "fieldtype": "Float",
+   "label": "From %",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "max_score",
+   "fieldtype": "Float",
+   "label": "To %",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Data",
+   "label": "Colour"
+  },
+  {
+   "fieldname": "interpretation",
+   "fieldtype": "Small Text",
+   "label": "Interpretation"
+  },
+  {
+   "fieldname": "interpretation_ar",
+   "fieldtype": "Small Text",
+   "label": "Interpretation (Arabic)"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-24 14:44:15.988978",
+ "modified_by": "Administrator",
+ "module": "AlphaX GRC",
+ "name": "GRC Maturity Band",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1
+}

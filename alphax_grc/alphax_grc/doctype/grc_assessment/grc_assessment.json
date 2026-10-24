@@ -1,0 +1,392 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-24 14:44:15.988978",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "organization",
+  "template_version",
+  "template_title",
+  "cb1",
+  "status",
+  "due_date",
+  "respondent",
+  "respondent_name",
+  "sb_team",
+  "assigned_consultant",
+  "cb_team",
+  "reviewer",
+  "sb_prog",
+  "started_on",
+  "submitted_on",
+  "review_started_on",
+  "cb_prog",
+  "approved_on",
+  "approved_by",
+  "released_on",
+  "released_by",
+  "resubmit_count",
+  "sb_res",
+  "overall_score",
+  "maturity_level",
+  "result_type",
+  "cb_res",
+  "answered_count",
+  "question_count",
+  "gating_note",
+  "preliminary_score",
+  "preliminary_level",
+  "final_score",
+  "final_level",
+  "sb_ans",
+  "answers",
+  "sb_notes",
+  "internal_notes",
+  "sb_snap",
+  "template_snapshot",
+  "preliminary_result",
+  "final_result"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "ASM-.YYYY.-.#####",
+   "default": "ASM-.YYYY.-.#####",
+   "hidden": 1
+  },
+  {
+   "fieldname": "organization",
+   "fieldtype": "Link",
+   "label": "Organization",
+   "options": "GRC Organization",
+   "reqd": 1,
+   "set_only_once": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "template_version",
+   "fieldtype": "Link",
+   "label": "Template version",
+   "options": "GRC Template Version",
+   "reqd": 1,
+   "set_only_once": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "template_title",
+   "fieldtype": "Data",
+   "label": "Assessment",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nIn Progress\nSubmitted\nUnder Review\nClarification Required\nResubmitted\nApproved\nReport Released",
+   "default": "Draft",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "label": "Due date",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "respondent",
+   "fieldtype": "Link",
+   "label": "Started by",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "respondent_name",
+   "fieldtype": "Data",
+   "label": "Respondent",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_team",
+   "fieldtype": "Section Break",
+   "label": "GRC team"
+  },
+  {
+   "fieldname": "assigned_consultant",
+   "fieldtype": "Link",
+   "label": "Assigned consultant",
+   "options": "User",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "cb_team",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reviewer",
+   "fieldtype": "Link",
+   "label": "Reviewer",
+   "options": "User",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "sb_prog",
+   "fieldtype": "Section Break",
+   "label": "Progress"
+  },
+  {
+   "fieldname": "started_on",
+   "fieldtype": "Datetime",
+   "label": "Started",
+   "read_only": 1
+  },
+  {
+   "fieldname": "submitted_on",
+   "fieldtype": "Datetime",
+   "label": "Submitted",
+   "read_only": 1
+  },
+  {
+   "fieldname": "review_started_on",
+   "fieldtype": "Datetime",
+   "label": "Review started",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_prog",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approved_on",
+   "fieldtype": "Datetime",
+   "label": "Approved",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Approved by",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "released_on",
+   "fieldtype": "Datetime",
+   "label": "Report released",
+   "read_only": 1
+  },
+  {
+   "fieldname": "released_by",
+   "fieldtype": "Link",
+   "label": "Released by",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "resubmit_count",
+   "fieldtype": "Int",
+   "label": "Resubmissions",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_res",
+   "fieldtype": "Section Break",
+   "label": "Results"
+  },
+  {
+   "fieldname": "overall_score",
+   "fieldtype": "Percent",
+   "label": "Current score",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "Preliminary until the report is approved."
+  },
+  {
+   "fieldname": "maturity_level",
+   "fieldtype": "Data",
+   "label": "Current level",
+   "read_only": 1
+  },
+  {
+   "fieldname": "result_type",
+   "fieldtype": "Select",
+   "label": "Result type",
+   "options": "Preliminary\nApproved",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_res",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "answered_count",
+   "fieldtype": "Int",
+   "label": "Answered",
+   "read_only": 1
+  },
+  {
+   "fieldname": "question_count",
+   "fieldtype": "Int",
+   "label": "Questions",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gating_note",
+   "fieldtype": "Small Text",
+   "label": "Gating note",
+   "read_only": 1
+  },
+  {
+   "fieldname": "preliminary_score",
+   "fieldtype": "Percent",
+   "label": "Preliminary score (as submitted)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "preliminary_level",
+   "fieldtype": "Data",
+   "label": "Preliminary level",
+   "read_only": 1
+  },
+  {
+   "fieldname": "final_score",
+   "fieldtype": "Percent",
+   "label": "Final score (approved)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "final_level",
+   "fieldtype": "Data",
+   "label": "Final level",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_ans",
+   "fieldtype": "Section Break",
+   "label": "Answers"
+  },
+  {
+   "fieldname": "answers",
+   "fieldtype": "Table",
+   "label": "Answers",
+   "options": "GRC Assessment Answer"
+  },
+  {
+   "fieldname": "sb_notes",
+   "fieldtype": "Section Break",
+   "label": "Internal"
+  },
+  {
+   "fieldname": "internal_notes",
+   "fieldtype": "Text",
+   "label": "Internal notes (never shown to the customer)"
+  },
+  {
+   "fieldname": "sb_snap",
+   "fieldtype": "Section Break",
+   "label": "Frozen scoring snapshot",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "template_snapshot",
+   "fieldtype": "Code",
+   "label": "Template and scoring snapshot",
+   "options": "JSON",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "preliminary_result",
+   "fieldtype": "Code",
+   "label": "Preliminary result",
+   "options": "JSON",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "final_result",
+   "fieldtype": "Code",
+   "label": "Final result",
+   "options": "JSON",
+   "read_only": 1,
+   "no_copy": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-24 14:44:15.988978",
+ "modified_by": "Administrator",
+ "module": "AlphaX GRC",
+ "name": "GRC Assessment",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Consultant",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "GRC Reviewer",
+   "read": 1,
+   "write": 1,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "naming_series:",
+ "title_field": "template_title",
+ "search_fields": "organization,template_title,status",
+ "is_calendar_and_gantt": 0
+}
