@@ -34,7 +34,10 @@ def after_migrate():
 
 def ensure_file_field():
     from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
-    create_custom_fields({"File": [dict(fieldname="grc_question_code", label="GRC Question Code", fieldtype="Data", read_only=1, hidden=1, no_copy=1, insert_after="file_name")]}, ignore_validate=True)
+    create_custom_fields({
+        "File": [dict(fieldname="grc_question_code", label="GRC Question Code", fieldtype="Data", read_only=1, hidden=1, no_copy=1, insert_after="file_name")],
+        "User": [dict(fieldname="grc_active_org", label="GRC Active Organization", fieldtype="Data", read_only=1, hidden=1, no_copy=1, insert_after="language")],
+    }, ignore_validate=True)
 
 
 def ensure_roles():

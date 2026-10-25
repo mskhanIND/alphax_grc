@@ -19,6 +19,9 @@ permission_query_conditions = {
     "GRC Follow Up Log": "alphax_grc.grc.access.followup_query",
     "GRC Reminder": "alphax_grc.grc.access.reminder_query",
     "GRC Report": "alphax_grc.grc.access.report_query",
+    "GRC Activity Log": "alphax_grc.grc.access.activity_query",
+    "GRC Organization Member": "alphax_grc.grc.access.member_query",
+    "GRC Invitation": "alphax_grc.grc.access.invitation_query",
 }
 
 has_permission = {
@@ -28,6 +31,9 @@ has_permission = {
     "GRC Follow Up Log": "alphax_grc.grc.access.followup_has_permission",
     "GRC Reminder": "alphax_grc.grc.access.reminder_has_permission",
     "GRC Report": "alphax_grc.grc.access.report_has_permission",
+    "GRC Activity Log": "alphax_grc.grc.access.activity_has_permission",
+    "GRC Organization Member": "alphax_grc.grc.access.member_has_permission",
+    "GRC Invitation": "alphax_grc.grc.access.invitation_has_permission",
 }
 
 scheduler_events = {

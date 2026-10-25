@@ -19,6 +19,7 @@ MAX_CODE_ATTEMPTS = 5
 MAX_CODES_PER_HOUR = 5
 REG_TOKEN_TTL = 30 * 60
 INVITE_DAYS = 7
+MAX_ORGS_PER_USER = 25
 
 
 def _cache():
@@ -110,10 +111,10 @@ def create_invitation(organization, email, role, invited_by):
 
 def accept_invitation_for(user, inv):
     """Create the membership for an existing user and mark the invitation accepted."""
-    if access.get_membership(user):
-        frappe.throw(_("This account already belongs to an organization."))
-    if frappe.db.exists("GRC Organization Member", {"user": user}):
-        frappe.throw(_("This account cannot join another organization."))
+    if frappe.db.exists("GRC Organization Member", {"user": user, "organization": inv.organization, "status": "Active"}):
+        frappe.throw(_("This account is already a member of this organization."))
+    if len(access.get_memberships(user)) >= MAX_ORGS_PER_USER:
+        frappe.throw(_("This account belongs to the maximum number of organizations."))
     frappe.get_doc({
         "doctype": "GRC Organization Member", "user": user, "organization": inv.organization,
         "member_role": inv.member_role, "status": "Active", "invited_by": inv.invited_by,
@@ -129,7 +130,7 @@ def invitation_info(token):
     if not inv:
         frappe.throw(_("This invitation is invalid or has expired."))
     org = frappe.db.get_value("GRC Organization", inv.organization, ["legal_name", "legal_name_ar"], as_dict=True)
-    return {"email": inv.email, "role": inv.member_role, "organization": org.legal_name, "organization_ar": org.legal_name_ar or org.legal_name}
+    return {"email": inv.email, "has_account": bool(frappe.db.exists("User", {"name": inv.email, "enabled": 1})), "role": inv.member_role, "organization": org.legal_name, "organization_ar": org.legal_name_ar or org.legal_name}
 
 
 @frappe.whitelist(allow_guest=True)
@@ -150,6 +151,10 @@ def register_start(email, full_name, language="en", invite_token=None):
     check_work_email(email, invited=bool(inv))
 
     cache = _cache()
+    cool_key = "grc:otp:cool:" + _h(email)
+    if cache.get_value(cool_key):
+        frappe.throw(_("Please wait a minute before requesting another code."))
+    cache.set_value(cool_key, 1, expires_in_sec=45)
     count_key = "grc:otp:count:" + _h(email)
     n = cint(cache.get_value(count_key) or 0)
     if n >= MAX_CODES_PER_HOUR:
@@ -295,3 +300,18 @@ def site_config():
         "block_personal_email": bool(cint(s.block_personal_email_domains)),
         "sectors": [x for x in frappe.get_meta("GRC Organization").get_field("sector").options.split("\n") if x],
     }
+
+
+@frappe.whitelist(allow_guest=True)
+@rate_limit(limit=10, seconds=3600)
+def request_password_reset(email):
+    """Always answers the same way, whether or not the email has an account."""
+    email = clean_email(email)
+    try:
+        if frappe.db.exists("User", {"name": email, "enabled": 1}) and "GRC Customer" in frappe.get_roles(email):
+            user = frappe.get_doc("User", email)
+            user.flags.ignore_permissions = True
+            user.reset_password(send_email=True)
+    except Exception:
+        frappe.log_error(title="GRC password reset failed", message=frappe.get_traceback())
+    return {"status": "requested"}

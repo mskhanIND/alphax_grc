@@ -34,6 +34,39 @@ frappe.ui.form.on("GRC Assessment", {
           __("Assign"));
       });
     }
+    const A = "alphax_grc.alphax_grc.doctype.grc_assessment.grc_assessment.";
+    const editable = ["Draft", "In Progress", "Clarification Required"].includes(s);
+    if (editable) {
+      frm.add_custom_button(__("Enter Answers for Customer"), () => {
+        frappe.call(A + "get_review_summary", { name: frm.doc.name }).then((r) => {
+          const fields = [];
+          r.message.answers.forEach((a) => {
+            fields.push({ fieldtype: "Select", fieldname: "q_" + a.question_code, label: a.question_code + " " + (a.short_label || ""), options: ["", "A", "B", "C", "D"].join("\n"), default: a.selected_option || "",
+              description: ["A", "B", "C", "D"].map((L) => L + ": " + ((a.options || {})[L] || "")).join("  |  ") });
+          });
+          const d = new frappe.ui.Dialog({ title: __("Enter answers on behalf of the customer"), size: "extra-large", fields,
+            primary_action_label: __("Save answers"), primary_action(v) {
+              const items = r.message.answers.filter((a) => (v["q_" + a.question_code] || "") !== (a.selected_option || "") && v["q_" + a.question_code])
+                .map((a) => ({ question_code: a.question_code, selected_option: v["q_" + a.question_code] }));
+              if (!items.length) { d.hide(); return; }
+              frappe.call(A + "save_answers_for", { name: frm.doc.name, items: JSON.stringify(items) }).then(() => { d.hide(); frm.reload_doc(); });
+            } });
+          d.show();
+        });
+      }, __("On Behalf"));
+      if (["In Progress"].includes(s)) add(__("Submit for Customer"), "submit_on_behalf", __("On Behalf"));
+    }
+    if (frappe.user.has_role(["GRC Manager", "System Manager"]) || [frm.doc.assigned_consultant, frm.doc.reviewer].includes(frappe.session.user)) {
+      if (s !== "Report Released") {
+        frm.add_custom_button(__("Transfer"), () => {
+          frappe.prompt([{ fieldname: "assigned_consultant", label: __("New consultant"), fieldtype: "Link", options: "User", default: frm.doc.assigned_consultant },
+                         { fieldname: "reviewer", label: __("New reviewer"), fieldtype: "Link", options: "User", default: frm.doc.reviewer },
+                         { fieldname: "reason", label: __("Reason"), fieldtype: "Small Text", reqd: 1 }],
+            (v) => frappe.call(A + "transfer", Object.assign({ name: frm.doc.name }, v)).then(() => frm.reload_doc()), __("Transfer assessment"));
+        });
+      }
+    }
+    frm.add_custom_button(__("Activity"), () => frappe.set_route("List", "GRC Activity Log", { assessment: frm.doc.name }));
     frm.add_custom_button(__("Review Panel"), () => {
       frappe.call("alphax_grc.alphax_grc.doctype.grc_assessment.grc_assessment.get_review_summary", { name: frm.doc.name }).then((r) => {
         const d = r.message;

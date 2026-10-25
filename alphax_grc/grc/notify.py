@@ -1,4 +1,6 @@
 """Email helpers. Every send is wrapped so a missing outgoing email account never breaks a user action."""
+import time
+
 import frappe
 from frappe import _
 from frappe.utils import get_url
@@ -117,7 +119,11 @@ def send(recipients, subject, body, lang="en", name="", reference=None, now=Fals
             kwargs["now"] = True
         if reference:
             kwargs["reference_doctype"], kwargs["reference_name"] = reference
+        started = time.time()
         frappe.sendmail(**kwargs)
+        took = time.time() - started
+        if now and took > 5:
+            frappe.log_error(title="GRC email slow", message="Sending to %s took %.1f s. Check the outgoing mail server." % (", ".join(recipients), took))
         return True
     except frappe.OutgoingEmailError:
         return False  # no outgoing email account yet: expected on a fresh site, not an error
@@ -132,6 +138,17 @@ def has_outgoing_email():
         return bool(EmailAccount.find_outgoing(match_by_email=None, _raise_error=False))
     except Exception:
         return False
+
+
+def optional_recipients(organization, emails):
+    """Drop people who switched off optional emails (reminders, status updates), personally or for their organization.
+    Verification codes, invitations and clarification requests never go through this filter."""
+    if not emails:
+        return []
+    if not frappe.db.get_value("GRC Organization", organization, "notify_reminders"):
+        return []
+    off = set(frappe.get_all("GRC Organization Member", filters={"organization": organization, "notify_email": 0}, pluck="user"))
+    return [e for e in emails if e not in off]
 
 
 def org_admin_emails(organization):

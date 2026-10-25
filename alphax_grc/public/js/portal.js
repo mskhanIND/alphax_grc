@@ -46,16 +46,19 @@
   // ---------------------------------------------------------------- layout
   var NAV = [["dashboard", "dashboard", true], ["assessments", "assessments", true], ["organization", "organization", true], ["members", "members", true],
              ["actions", "actions", false], ["benchmarks", "benchmarks", false], ["frameworks", "frameworks", false]];
-  var ICON = { dashboard: "M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z", assessments: "M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h8", organization: "M4 21V8l8-5 8 5v13M9 21v-6h6v6", members: "M16 11a4 4 0 100-8 4 4 0 000 8zM3 21c0-4 3-7 7-7s7 3 7 7", actions: "M9 11l3 3 8-8M4 12v8h14", benchmarks: "M4 20V10M10 20V4M16 20v-8M22 20H2", frameworks: "M12 2l9 5-9 5-9-5zM3 12l9 5 9-5M3 17l9 5 9-5" };
+  var ICON = { group: "M3 21V10l6-4v15M9 21V3l12 5v13M13 11h4M13 15h4", dashboard: "M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z", assessments: "M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h8", organization: "M4 21V8l8-5 8 5v13M9 21v-6h6v6", members: "M16 11a4 4 0 100-8 4 4 0 000 8zM3 21c0-4 3-7 7-7s7 3 7 7", actions: "M9 11l3 3 8-8M4 12v8h14", benchmarks: "M4 20V10M10 20V4M16 20v-8M22 20H2", frameworks: "M12 2l9 5-9 5-9-5zM3 12l9 5 9-5M3 17l9 5 9-5" };
   function icon(n) { return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + (ICON[n] || "") + '"/></svg>'; }
 
   function shell(active, inner) {
     var m = S.ctx && S.ctx.membership;
-    var nav = NAV.map(function (n) {
+    var navItems = NAV.slice(); if (m && m.has_subsidiaries) navItems.splice(4, 0, ["group", "group", true]);
+    var orgs = (S.ctx && S.ctx.organizations) || [];
+    var switcher = orgs.length > 1 ? '<label class="orgsw"><small>' + t("switch_org") + '</small><select data-switch="1">' + orgs.map(function (o) { return '<option value="' + esc(o.name) + '"' + (m && o.name === m.organization.name ? " selected" : "") + ">" + esc(S.lang === "ar" && o.legal_name_ar || o.legal_name) + "</option>"; }).join("") + "</select></label>" : "";
+    var nav = navItems.map(function (n) {
       if (!n[2]) return '<span class="nav disabled" aria-disabled="true">' + icon(n[0]) + "<span>" + t(n[1]) + '</span><em>' + t("coming_soon") + "</em></span>";
       return '<a class="nav' + (active === n[0] ? " on" : "") + '" href="#/' + n[0] + '">' + icon(n[0]) + "<span>" + t(n[1]) + "</span></a>";
     }).join("");
-    return '<div class="layout"><aside class="side"><div class="brand"><b>AlphaX</b><span>GRC &amp; Audit</span></div><nav>' + nav + "</nav>" +
+    return '<div class="layout"><aside class="side"><div class="brand"><b>AlphaX</b><span>GRC &amp; Audit</span></div>' + switcher + "<nav>" + nav + "</nav>" +
       '<div class="side-foot"><div class="who"><strong>' + esc(S.ctx.full_name) + "</strong><small>" + esc(m ? (S.lang === "ar" && m.organization.legal_name_ar || m.organization.legal_name) : S.ctx.user) + "</small></div>" +
       '<button class="btn ghost sm" data-act="lang">' + t("language") + '</button> <button class="btn ghost sm" data-act="logout">' + t("signout") + "</button></div></aside>" +
       '<main class="main" id="main">' + inner + '<footer class="foot">' + esc(t("disclaimer")) + "</footer></main></div>";
@@ -79,14 +82,14 @@
   function viewLogin() {
     render(pubShell('<h1>' + t("login_title") + '</h1><form id="f-login" novalidate>' + field("usr", t("email"), { type: "email", auto: "username", dir: "ltr" }) +
       field("pwd", t("password"), { type: "password", auto: "current-password" }) +
-      '<button class="btn primary block" type="submit">' + t("signin") + '</button></form><p class="aux"><a class="link" href="/login#forgot">' + t("forgot") + "</a></p>" +
+      '<button class="btn primary block" type="submit">' + t("signin") + '</button></form><p class="aux"><a class="link" href="#/forgot">' + t("forgot") + "</a></p>" +
       '<p class="aux">' + t("no_account") + ' <a class="link" href="#/register">' + t("register") + "</a></p>"));
     $("#f-login").addEventListener("submit", function (e) {
       e.preventDefault(); var b = $("button[type=submit]", e.target); busy(b, true);
       var fd = new FormData(); fd.append("usr", val("usr")); fd.append("pwd", document.getElementById("pwd").value);
       fetch("/api/method/login", { method: "POST", body: fd, headers: { "X-Frappe-CSRF-Token": window.GRC.csrf, "Accept": "application/json" }, credentials: "same-origin" })
         .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(r.status === 401 ? (S.lang === "ar" ? "بيانات الدخول غير صحيحة." : "Incorrect email or password.") : (serverMessage(r, d) || t("err_generic"))); }); })
-        .then(function () { window.location.href = "/grc"; })
+        .then(function () { var tok = (new URLSearchParams(window.location.search)).get("invite"); window.location.href = "/grc" + (tok ? "?invite=" + encodeURIComponent(tok) : ""); })
         .catch(function (err) { busy(b, false); toast(err.message, true); });
     });
   }
@@ -98,13 +101,17 @@
     var bar = '<ol class="steps">' + steps.map(function (s, i) { return '<li class="' + (i + 1 === step ? "on" : i + 1 < step ? "done" : "") + '"><i>' + (i + 1) + "</i>" + s + "</li>"; }).join("") + "</ol>";
     var body = "";
     if (S.reg.invite) body += '<p class="note">' + t("invited_to") + " <b>" + esc(S.lang === "ar" ? S.reg.invite.organization_ar : S.reg.invite.organization) + "</b> (" + esc(t("r_" + S.reg.invite.role.replace(/ /g, "_"))) + ")</p>";
+    if (S.reg.invite && S.reg.invite.has_account) {
+      render(pubShell("<h1>" + t("register_title") + "</h1>" + body + '<p class="note warn">' + t("invite_has_account") + '</p><a class="btn primary block" href="#/login">' + t("signin") + "</a>")); return;
+    }
     if (step === 1) {
-      body += '<form id="f-r1" novalidate>' + field("r_name", t("full_name"), { value: S.reg.name, auto: "name" }) + field("r_email", t("email"), { type: "email", value: S.reg.email, auto: "email", dir: "ltr", readonly: !!S.reg.invite }) +
+      body += '<p class="note">' + t("have_account") + ' <a class="link" href="#/login"><b>' + t("signin") + '</b></a> &middot; <a class="link" href="#/forgot">' + t("forgot") + "</a></p>" +
+        '<form id="f-r1" novalidate>' + field("r_name", t("full_name"), { value: S.reg.name, auto: "name" }) + field("r_email", t("email"), { type: "email", value: S.reg.email, auto: "email", dir: "ltr", readonly: !!S.reg.invite }) +
         '<button class="btn primary block" type="submit">' + t("send_code") + "</button></form>";
     } else if (step === 2) {
-      body += '<p class="note">' + t("code_sent") + " <b dir=\"ltr\">" + esc(S.reg.email) + "</b></p>" + (S.reg.test_code ? '<p class="note warn">' + t("test_code") + ": <b dir=\"ltr\">" + esc(S.reg.test_code) + "</b></p>" : "") +
+      body += '<p class="note">' + t("code_sent") + " <b dir=\"ltr\">" + esc(S.reg.email) + "</b></p><p class=\"muted\"><small>" + t("code_help") + "</small></p>" + (S.reg.test_code ? '<p class="note warn">' + t("test_code") + ": <b dir=\"ltr\">" + esc(S.reg.test_code) + "</b></p>" : "") +
         '<form id="f-r2" novalidate>' + field("r_code", t("code"), { auto: "one-time-code", dir: "ltr", ph: "123456" }) + '<button class="btn primary block" type="submit">' + t("verify") + "</button></form>" +
-        '<p class="aux"><button class="link" data-act="reg-back">' + t("back") + "</button></p>";
+        '<p class="aux"><button class="link" id="resend" data-act="resend" disabled>' + t("resend") + '</button> &middot; <a class="link" href="#/login">' + t("signin") + '</a> &middot; <button class="link" data-act="reg-back">' + t("back") + "</button></p>";
     } else {
       var sectors = (S.cfg && S.cfg.sectors || []).map(function (s) { return { v: s, l: s }; });
       body += '<form id="f-r3" novalidate>' + (S.reg.invite ? "" : '<h2>' + t("org_details") + "</h2>" + '<div class="grid2">' + field("o_legal", t("legal_name"), { dir: "ltr" }) + field("o_legal_ar", t("legal_name_ar"), { dir: "rtl" }) +
@@ -113,6 +120,7 @@
     }
     render(pubShell("<h1>" + t("register_title") + "</h1>" + bar + body + '<p class="aux">' + t("have_account") + ' <a class="link" href="#/login">' + t("signin") + "</a></p>"));
     var f1 = $("#f-r1"), f2 = $("#f-r2"), f3 = $("#f-r3");
+    if (f2) cooldown();
     if (f1) f1.addEventListener("submit", function (e) {
       e.preventDefault(); var b = $("button[type=submit]", f1); busy(b, true); S.reg.name = val("r_name"); S.reg.email = val("r_email");
       api("auth.register_start", { email: S.reg.email, full_name: S.reg.name, language: S.lang, invite_token: inv || null }).then(function (r) { S.reg.step = 2; S.reg.test_code = r.test_code; viewRegister(); }).catch(function (er) { busy(b, false); fail(er); });
@@ -125,6 +133,21 @@
       e.preventDefault(); var b = $("button[type=submit]", f3); busy(b, true);
       var org = S.reg.invite ? null : { legal_name: val("o_legal"), legal_name_ar: val("o_legal_ar"), sector: val("o_sector"), city: val("o_city"), commercial_registration: val("o_cr"), website: val("o_web") };
       api("auth.register_complete", { email: S.reg.email, reg_token: S.reg.token, password: document.getElementById("r_pwd").value, organization: org }).then(function () { S.reg = {}; window.location.href = "/grc"; }).catch(function (er) { busy(b, false); fail(er); });
+    });
+  }
+
+  function cooldown() {
+    var b = $("#resend"); if (!b) return; var left = 45; clearInterval(cooldown._i);
+    function tick() { if (!document.getElementById("resend")) { clearInterval(cooldown._i); return; } b.disabled = left > 0; b.textContent = left > 0 ? t("resend") + " (" + left + ")" : t("resend"); left--; }
+    tick(); cooldown._i = setInterval(tick, 1000);
+  }
+
+  function viewForgot() {
+    render(pubShell("<h1>" + t("forgot_title") + '</h1><p class="muted">' + t("forgot_text") + '</p><form id="f-forgot" novalidate>' + field("fg_email", t("email"), { type: "email", auto: "username", dir: "ltr" }) +
+      '<button class="btn primary block" type="submit">' + t("send_reset") + '</button></form><p class="aux"><a class="link" href="#/login">' + t("signin") + "</a></p>"));
+    $("#f-forgot").addEventListener("submit", function (e) {
+      e.preventDefault(); var b = $("button[type=submit]", e.target); busy(b, true);
+      api("auth.request_password_reset", { email: val("fg_email") }).then(function () { busy(b, false); toast(t("reset_sent")); }).catch(function (er) { busy(b, false); fail(er); });
     });
   }
 
@@ -192,7 +215,8 @@
     var openReq = clar.filter(function (c) { return c.kind === "Request" && c.status === "Open"; });
 
     var h = '<header class="ph"><div><a class="link" href="#/assessments">&larr; ' + t("assessments") + "</a><h1>" + esc(S.lang === "ar" && snap.template_name_ar || snap.template_name) + "</h1><div>" + badge(a.status) + ' <small class="muted">' + esc(a.name) + "</small></div></div>" +
-      '<div class="ph-r"><span id="savestate" class="savestate"></span>' + (a.released ? '<a class="btn" href="#/assessments/' + a.name + '/scorecard">' + t("scorecard") + "</a>" : "") + "</div></header>";
+      '<div class="ph-r"><button class="btn sm" data-act="activity">' + t("activity") + '</button> <span id="savestate" class="savestate"></span>' + (a.released ? '<a class="btn" href="#/assessments/' + a.name + '/scorecard">' + t("scorecard") + "</a>" : "") + "</div></header>";
+    h += '<section class="card" id="activity-box" hidden></section>';
     if (!edit) h += '<p class="note">' + (a.can_edit ? t("readonly") : t("viewer_note")) + "</p>";
     h += '<p class="muted next">' + t("na_" + a.next_action) + "</p>";
     h += '<div class="prog wide"><i style="width:' + Math.round(done / total * 100) + '%"></i></div><small class="muted">' + done + " " + t("of") + " " + total + " " + t("answered") + "</small>";
@@ -301,7 +325,10 @@
       var h = '<header class="ph"><h1>' + t("org_title") + '</h1></header><form class="card" id="f-org" novalidate><div class="grid2">' + field("g_legal", t("legal_name"), { value: o.legal_name, readonly: ro, dir: "ltr" }) + field("g_legal_ar", t("legal_name_ar"), { value: o.legal_name_ar, readonly: ro, dir: "rtl" }) +
         field("g_sector", t("sector"), { options: sectors, value: o.sector }) + field("g_city", t("city"), { value: o.city, readonly: ro }) + field("g_cr", t("cr"), { value: o.commercial_registration, readonly: ro, dir: "ltr" }) + field("g_web", t("website"), { value: o.website, readonly: ro, dir: "ltr" }) +
         field("g_cn", t("contact_name"), { value: o.primary_contact_name, readonly: ro }) + field("g_ce", t("contact_email"), { value: o.primary_contact_email, readonly: ro, dir: "ltr" }) + "</div>" +
-        (admin ? '<button class="btn primary" type="submit">' + t("save") + "</button>" : '<p class="muted">' + t("only_admin") + "</p>") + "</form>";
+        (admin ? '<button class="btn primary" type="submit">' + t("save") + "</button>" : '<p class="muted">' + t("only_admin") + "</p>") + "</form>" +
+        '<section class="card"><h3>' + t("notif_title") + '</h3><p class="muted">' + t("notif_text") + '</p><label class="chk"><input type="checkbox" data-notify="me"' + (S.ctx.membership.notify_me ? " checked" : "") + "> " + t("notif_me") + "</label>" +
+        (admin ? '<label class="chk"><input type="checkbox" data-notify="org"' + (S.ctx.membership.notify_org ? " checked" : "") + "> " + t("notif_org") + "</label>" : "") + "</section>" +
+        '<p><a class="btn" href="#/neworg">' + t("add_org") + "</a></p>";
       render(shell("organization", h));
       if (ro) $$("#f-org select").forEach(function (s) { s.disabled = true; });
       var f = $("#f-org");
@@ -311,6 +338,32 @@
           .then(function () { busy(b, false); toast(t("saved_ok")); }).catch(function (er) { busy(b, false); fail(er); });
       });
     }).catch(fail);
+  }
+
+  function viewGroup() {
+    api("portal.group_overview").then(function (rows) {
+      var h = '<header class="ph"><h1>' + t("group") + '</h1></header><p class="note">' + t("group_note") + "</p>";
+      if (!rows.length) h += '<p class="empty">' + t("group_empty") + "</p>";
+      rows.forEach(function (o) {
+        h += '<section class="card"><h3>' + esc(S.lang === "ar" && o.legal_name_ar || o.legal_name) + "</h3>" + (o.assessments.length ? '<div class="tablewrap"><table class="tbl"><tbody>' + o.assessments.map(function (a) {
+          return "<tr><td>" + esc(a.title) + "<br><small>" + esc(a.name) + "</small></td><td>" + badge(a.status) + "</td><td>" + (a.released ? "<b>" + a.final_score + "%</b> " + esc(a.final_level || "") : "-") + '</td><td class="r">' + (a.released ? '<a class="btn sm" href="#/assessments/' + a.name + '/scorecard">' + t("scorecard") + "</a>" : "") + "</td></tr>";
+        }).join("") + "</tbody></table></div>" : '<p class="muted">' + t("no_assessments") + "</p>") + "</section>";
+      });
+      render(shell("group", h));
+    }).catch(fail);
+  }
+
+  function viewNewOrg() {
+    var sectors = (S.cfg && S.cfg.sectors || []).map(function (s) { return { v: s, l: s }; });
+    var admins = ((S.ctx && S.ctx.organizations) || []).filter(function (o) { return o.role === "Org Admin"; }).map(function (o) { return { v: o.name, l: S.lang === "ar" && o.legal_name_ar || o.legal_name }; });
+    var h = '<header class="ph"><h1>' + t("add_org") + '</h1></header><form class="card" id="f-new" novalidate><p class="muted">' + t("add_org_text") + '</p><div class="grid2">' + field("n_legal", t("legal_name"), { dir: "ltr" }) + field("n_legal_ar", t("legal_name_ar"), { dir: "rtl" }) +
+      field("n_sector", t("sector"), { options: sectors }) + field("n_city", t("city")) + field("n_cr", t("cr"), { dir: "ltr" }) + field("n_parent", t("parent_org"), { options: admins, hint: t("parent_hint") }) + '</div><button class="btn primary" type="submit">' + t("create") + "</button></form>";
+    render(shell("organization", h));
+    $("#f-new").addEventListener("submit", function (e) {
+      e.preventDefault(); var b = $("button[type=submit]", e.target); busy(b, true);
+      api("portal.create_organization", { organization: { legal_name: val("n_legal"), legal_name_ar: val("n_legal_ar"), sector: val("n_sector"), city: val("n_city"), commercial_registration: val("n_cr") }, parent_organization: val("n_parent") || null })
+        .then(function (c) { S.ctx = c; S.asm = null; toast(t("saved_ok")); go("#/dashboard"); }).catch(function (er) { busy(b, false); fail(er); });
+    });
   }
 
   function viewMembers() {
@@ -340,7 +393,7 @@
     var sectors = (S.cfg && S.cfg.sectors || []).map(function (s) { return { v: s, l: s }; });
     var staff = S.ctx.is_staff;
     render('<div class="auth"><div class="auth-card"><div class="auth-top"><div class="brand dark"><b>AlphaX</b><span>GRC &amp; Audit</span></div><div><button class="btn ghost sm" data-act="lang">' + t("language") + '</button> <button class="btn ghost sm" data-act="logout">' + t("signout") + "</button></div></div>" +
-      (staff ? "<h1>" + t("welcome") + '</h1><p class="note">' + t("staff_note") + '</p><a class="btn primary" href="/app">' + t("open_desk") + "</a>" :
+      (staff ? "<h1>" + t("welcome") + '</h1><p class="note">' + t("staff_note") + '</p><p class="muted"><b>' + esc(S.ctx.full_name) + "</b> &middot; " + esc((S.ctx.staff_roles || []).join(", ")) + "<br><small>" + t("staff_customer_hint") + '</small></p><a class="btn primary" href="/app">' + t("open_desk") + "</a>" :
         "<h1>" + t("setup_org") + "</h1><p>" + t("setup_org_text") + '</p><form id="f-setup" novalidate><div class="grid2">' + field("o_legal", t("legal_name"), { dir: "ltr" }) + field("o_legal_ar", t("legal_name_ar"), { dir: "rtl" }) + field("o_sector", t("sector"), { options: sectors }) + field("o_city", t("city")) + "</div>" +
         '<button class="btn primary" type="submit">' + t("save") + '</button></form><p class="aux">' + t("join_with_invite") + "</p>") + "</div></div>");
     var f = $("#f-setup");
@@ -357,6 +410,16 @@
     var act = el.getAttribute("data-act");
     if (act === "lang") { S.lang = S.lang === "ar" ? "en" : "ar"; applyLang(); if (S.ctx) api("portal.set_language", { language: S.lang }).catch(function () {}); route(true); return; }
     if (act === "logout") { fetch("/api/method/logout", { method: "POST", headers: { "X-Frappe-CSRF-Token": window.GRC.csrf }, credentials: "same-origin" }).then(function () { window.location.href = "/grc"; }); return; }
+    if (act === "resend") { S.reg.step = 1; var rb = el; busy(rb, true); api("auth.register_start", { email: S.reg.email, full_name: S.reg.name, language: S.lang, invite_token: ((new URLSearchParams(window.location.search)).get("invite")) || null }).then(function (r) { S.reg.test_code = r.test_code; S.reg.step = 2; toast(t("code_resent")); viewRegister(); }).catch(function (er) { S.reg.step = 2; busy(rb, false); fail(er); }); return; }
+    if (act === "activity") {
+      var box = $("#activity-box"); if (!box) return; if (!box.hidden) { box.hidden = true; return; }
+      api("portal.get_activity", { name: S.asm.name }).then(function (rows) {
+        box.innerHTML = "<h3>" + t("activity") + "</h3>" + (rows.length ? '<ul class="tl">' + rows.map(function (r) {
+          var who = r.by_type === "Staff" ? t("grc_team") : r.by_type === "System" ? t("system") : esc(r.by);
+          return "<li><small>" + new Date(r.at).toLocaleString(S.lang === "ar" ? "ar-SA" : "en-GB") + " &middot; " + who + '</small><div><b>' + esc(t("ev_" + r.event_type)) + "</b> " + esc(r.detail || "") + "</div></li>";
+        }).join("") + "</ul>" : '<p class="muted">-</p>'); box.hidden = false;
+      }).catch(fail); return;
+    }
     if (act === "reg-back") { S.reg.step = 1; viewRegister(); return; }
     if (act === "copy") { var i = $("#inv-link"); i.select(); try { document.execCommand("copy"); toast(t("copied")); } catch (er) {} return; }
     if (act === "start") { busy(el, true); api("portal.start_assessment").then(function (n) { go("#/assessments/" + n); }).catch(function (er) { busy(el, false); fail(er); }); return; }
@@ -391,6 +454,8 @@
         .then(function () { toast(t("saved")); refreshAssessment(true); }).catch(function (er) { toast(er.message, true); });
       return;
     }
+    if (el.hasAttribute && el.hasAttribute("data-switch")) { api("portal.switch_organization", { organization: el.value }).then(function (c) { S.ctx = c; S.asm = null; if (location.hash === "#/dashboard") route(); else go("#/dashboard"); }).catch(fail); return; }
+    if (el.hasAttribute && el.hasAttribute("data-notify")) { var k = el.getAttribute("data-notify"); api("portal.set_notifications", k === "me" ? { for_me: el.checked ? 1 : 0 } : { for_org: el.checked ? 1 : 0 }).then(function (c) { S.ctx = c; toast(t("saved_ok")); }).catch(function (er) { el.checked = !el.checked; fail(er); }); return; }
     if (el.hasAttribute && el.hasAttribute("data-role")) { api("portal.change_member_role", { name: el.getAttribute("data-role"), role: el.value }).then(function () { toast(t("saved_ok")); }).catch(function (er) { fail(er); viewMembers(); }); }
   });
   document.addEventListener("input", function (e) {
@@ -405,6 +470,7 @@
     var h = (location.hash || "#/").replace(/^#\/?/, ""), p = h.split("/");
     if (!S.ctx) {
       if (p[0] === "register") return viewRegister();
+      if (p[0] === "forgot") return viewForgot();
       return viewLogin();
     }
     if (!S.ctx.membership) return viewSetup();
@@ -413,6 +479,8 @@
     switch (p[0]) {
       case "assessments": return viewAssessments();
       case "organization": return viewOrganization();
+      case "neworg": return viewNewOrg();
+      case "group": return viewGroup();
       case "members": return viewMembers();
       default: return viewDashboard();
     }
@@ -425,8 +493,8 @@
     var pcfg = fetch(API + "auth.site_config", { credentials: "same-origin" }).then(function (r) { return r.json(); }).then(function (d) { S.cfg = d.message; }).catch(function () {});
     var pctx = fetch(API + "portal.get_context", { credentials: "same-origin", headers: { "Accept": "application/json" } }).then(function (r) { return r.ok ? r.json().then(function (d) { S.ctx = d.message; }) : null; }).catch(function () {});
     Promise.all([pcfg, pctx]).then(function () {
-      if (S.ctx && inviteTok && !S.ctx.membership) {
-        return api("portal.accept_invitation", { token: inviteTok }).then(function (c) { S.ctx = c; history.replaceState(null, "", "/grc#/dashboard"); }).catch(function (e) { toast(e.message, true); });
+      if (S.ctx && inviteTok && !S.ctx.is_staff) {
+        return api("portal.accept_invitation", { token: inviteTok }).then(function (c) { S.ctx = c; toast(t("invite_accepted")); }).catch(function (e) { toast(e.message, true); }).then(function () { history.replaceState(null, "", "/grc#/dashboard"); });
       }
     }).then(function () {
       if (!S.ctx && inviteTok) {

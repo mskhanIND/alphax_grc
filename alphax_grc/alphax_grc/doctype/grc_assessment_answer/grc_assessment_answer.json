@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 0,
- "creation": "2026-10-24 14:44:15.988978",
+ "creation": "2026-10-25 14:08:47.751648",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -12,7 +12,9 @@
   "points",
   "comment",
   "reviewer_note",
-  "answered_on"
+  "answered_on",
+  "answered_by",
+  "answered_by_staff"
  ],
  "fields": [
   {
@@ -62,11 +64,24 @@
    "fieldtype": "Datetime",
    "label": "Answered on",
    "read_only": 1
+  },
+  {
+   "fieldname": "answered_by",
+   "fieldtype": "Link",
+   "label": "Answered by",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "answered_by_staff",
+   "fieldtype": "Check",
+   "label": "Entered by the GRC team",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-24 14:44:15.988978",
+ "modified": "2026-10-25 14:08:47.751648",
  "modified_by": "Administrator",
  "module": "AlphaX GRC",
  "name": "GRC Assessment Answer",

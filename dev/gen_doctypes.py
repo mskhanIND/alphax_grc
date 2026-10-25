@@ -100,16 +100,22 @@ doctype("GRC Organization", [
     CB("cb2"),
     F("primary_contact_name", "Data", "Primary contact name"),
     F("primary_contact_email", "Data", "Primary contact email", options="Email"),
+    SB("sb_group", "Group and notifications"),
+    F("parent_organization", "Link", "Parent organization (holding company)", options="GRC Organization", description="Admins of the parent can view this organization's assessments (read only)."),
+    F("notify_reminders", "Check", "Send reminder and status emails", default="1", description="Security emails (verification, invitations) and clarification requests are always sent."),
+    CB("cb3"),
+    F("managed_by_staff", "Check", "Created by the GRC team on behalf of the customer", read_only=1),
     F("created_by_user", "Link", "Created by", options="User", read_only=1),
 ], [P("S", "rwcd"), P("M", "rwc"), P("C", "rw"), P("R", "r")],
     autoname="format:ORG-{#####}", title_field="legal_name", search_fields="legal_name,sector,city", show_title_field_in_link=1)
 
 doctype("GRC Organization Member", [
-    F("user", "Link", "User", options="User", reqd=1, unique=1, in_list_view=1),
+    F("user", "Link", "User", options="User", reqd=1, in_list_view=1),
     F("full_name", "Data", "Full name", fetch_from="user.full_name", read_only=1, in_list_view=1),
     F("organization", "Link", "Organization", options="GRC Organization", reqd=1, in_list_view=1, in_standard_filter=1),
     F("member_role", "Select", "Role in organization", options="Org Admin\nAssessor\nAction Owner\nViewer", default="Assessor", reqd=1, in_list_view=1),
-    F("status", "Select", "Status", options="Active\nDisabled", default="Active", in_list_view=1),
+    F("status", "Select", "Status", options="Active\nDisabled\nRemoved", default="Active", in_list_view=1),
+    F("notify_email", "Check", "Receive reminder and status emails", default="1"),
     F("invited_by", "Link", "Invited by", options="User", read_only=1),
 ], [P("S", "rwcd"), P("M", "rwcd"), P("C", "r"), P("R", "r")], autoname="hash", title_field="full_name")
 
@@ -215,6 +221,8 @@ doctype("GRC Assessment Answer", [
     F("comment", "Small Text", "Customer comment"),
     F("reviewer_note", "Small Text", "Reviewer note (internal)"),
     F("answered_on", "Datetime", "Answered on", read_only=1),
+    F("answered_by", "Link", "Answered by", options="User", read_only=1),
+    F("answered_by_staff", "Check", "Entered by the GRC team", read_only=1),
 ], istable=1, editable_grid=1)
 
 doctype("GRC Assessment", [
@@ -286,6 +294,17 @@ doctype("GRC Follow Up Log", [
     F("note", "Text", "Note"),
     F("next_action_on", "Date", "Next action on"),
 ], [P("S", "rwcd"), P("M", "rwcd"), P("C", "rwc"), P("R", "r")], autoname="format:FUP-{#####}", title_field="contact_type")
+
+doctype("GRC Activity Log", [
+    F("assessment", "Link", "Assessment", options="GRC Assessment", reqd=1, in_list_view=1, in_standard_filter=1),
+    F("organization", "Link", "Organization", options="GRC Organization", in_list_view=1, in_standard_filter=1),
+    F("event_type", "Select", "Event", options="Answer\nEvidence\nStatus\nAssignment\nClarification\nReport\nReminder\nNote", in_list_view=1, in_standard_filter=1),
+    F("actor", "Link", "By", options="User", in_list_view=1),
+    F("actor_type", "Select", "Actor type", options="Customer\nStaff\nSystem", in_list_view=1, in_standard_filter=1),
+    F("question_code", "Data", "Question"),
+    F("detail", "Small Text", "Detail"),
+    F("visible_to_customer", "Check", "Visible to customer", default="1"),
+], [P("S", "r"), P("M", "r"), P("C", "r"), P("R", "r")], autoname="hash", title_field="event_type", track_changes=0, sort_field="creation")
 
 doctype("GRC Reminder", [
     F("assessment", "Link", "Assessment", options="GRC Assessment", reqd=1, in_list_view=1, in_standard_filter=1),

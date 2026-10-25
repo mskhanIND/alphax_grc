@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 0,
- "creation": "2026-10-24 14:44:15.988978",
+ "creation": "2026-10-25 14:08:47.751648",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -19,6 +19,11 @@
   "cb2",
   "primary_contact_name",
   "primary_contact_email",
+  "sb_group",
+  "parent_organization",
+  "notify_reminders",
+  "cb3",
+  "managed_by_staff",
   "created_by_user"
  ],
  "fields": [
@@ -105,6 +110,35 @@
    "options": "Email"
   },
   {
+   "fieldname": "sb_group",
+   "fieldtype": "Section Break",
+   "label": "Group and notifications"
+  },
+  {
+   "fieldname": "parent_organization",
+   "fieldtype": "Link",
+   "label": "Parent organization (holding company)",
+   "options": "GRC Organization",
+   "description": "Admins of the parent can view this organization's assessments (read only)."
+  },
+  {
+   "fieldname": "notify_reminders",
+   "fieldtype": "Check",
+   "label": "Send reminder and status emails",
+   "default": "1",
+   "description": "Security emails (verification, invitations) and clarification requests are always sent."
+  },
+  {
+   "fieldname": "cb3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "managed_by_staff",
+   "fieldtype": "Check",
+   "label": "Created by the GRC team on behalf of the customer",
+   "read_only": 1
+  },
+  {
    "fieldname": "created_by_user",
    "fieldtype": "Link",
    "label": "Created by",
@@ -114,7 +148,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-24 14:44:15.988978",
+ "modified": "2026-10-25 14:08:47.751648",
  "modified_by": "Administrator",
  "module": "AlphaX GRC",
  "name": "GRC Organization",

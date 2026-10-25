@@ -2,7 +2,7 @@
 import frappe
 from frappe.utils import add_days, cint, date_diff, getdate, now_datetime, today
 
-from alphax_grc.grc import notify, workflow
+from alphax_grc.grc import activity, notify, workflow
 
 OPEN_FOR_CUSTOMER = ("Draft", "In Progress", "Clarification Required")
 
@@ -16,13 +16,15 @@ def _log(a, note, kind="System Reminder"):
                     "followup_on": now_datetime(), "note": note, "logged_by": "Administrator"}).insert(ignore_permissions=True)
 
 
-def _remind(a, message_key, message=None, **kw):
-    recipients, lang, name = workflow._audience(a)
+def _remind(a, message_key, message=None, optional=False, **kw):
+    """optional=True honours the customer's notification switches (automatic due-date reminders only)."""
+    recipients, lang, name = workflow._audience(a, optional=optional)
     title = workflow.title_of(a)
     body = message or notify.tr(message_key, lang, title=frappe.utils.escape_html(title), **kw)
     ok = notify.send(recipients, notify.tr("reminder_subject", lang, title=title),
                      notify.tr("reminder_body", lang, message=body, url=notify.portal_url("#/assessments/" + a.name)), lang, name, ("GRC Assessment", a.name))
-    _log(a, "%s (%s)" % (message_key, "email queued" if ok else "email not sent"))
+    _log(a, "%s (%s)" % (message_key, "email queued" if ok else ("skipped: notifications off" if not recipients else "email not sent")))
+    activity.log(a, "Reminder", "Reminder sent" if ok else "Reminder not sent", system=True)
     return ok
 
 
@@ -53,9 +55,9 @@ def send_due_reminders():
             a = frappe.get_doc("GRC Assessment", a)
             left = date_diff(getdate(a.due_date), getdate(today()))
             if left in days and not _already(a, "reminder_default_before"):
-                _remind(a, "reminder_default_before", due=a.due_date, days=left)
+                _remind(a, "reminder_default_before", optional=True, due=a.due_date, days=left)
             elif left < 0 and (-left) % every == 0 and not _already(a, "reminder_default_overdue"):
-                _remind(a, "reminder_default_overdue", due=a.due_date)
+                _remind(a, "reminder_default_overdue", optional=True, due=a.due_date)
         except Exception:
             frappe.log_error(title="GRC due reminder failed: %s" % a)
 

@@ -12,7 +12,7 @@ import frappe
 from frappe import _
 from frappe.utils import now_datetime
 
-from alphax_grc.grc import access, notify, scoring
+from alphax_grc.grc import access, activity, notify, scoring
 
 STATES = ["Draft", "In Progress", "Submitted", "Under Review", "Clarification Required", "Resubmitted", "Approved", "Report Released"]
 
@@ -65,6 +65,7 @@ def transition(doc, to_status, note=None, **fields):
         doc.set(k, v)
     doc.save(ignore_permissions=True)
     doc.add_comment("Info", _("Status changed from {0} to {1}.").format(frm, to_status) + ((" " + note) if note else ""))
+    activity.log(doc, "Status", "%s \u2192 %s%s" % (frm, to_status, (": " + note) if note else ""))
     return doc
 
 
@@ -72,25 +73,31 @@ def title_of(doc):
     return "{} ({})".format(doc.template_title or doc.template_version, doc.name)
 
 
-def _audience(doc):
-    """(recipients, lang, name) for the customer-side people of this assessment."""
+def _audience(doc, optional=False):
+    """(recipients, lang, name) for the customer-side people of this assessment.
+    optional=True applies the customer's notification switches (not used for clarification requests)."""
     emails = set(notify.org_admin_emails(doc.organization))
     if doc.respondent:
         emails.add(doc.respondent)
+    if optional:
+        emails = set(notify.optional_recipients(doc.organization, sorted(emails)))
     lang = notify.user_language(doc.respondent) if doc.respondent else "en"
     name = doc.respondent_name or ""
     return sorted(emails), lang, name
 
 
 # ------------------------------------------------------------------ customer side
-def apply_answers(doc, items, user):
-    """items: [{question_code, selected_option, comment}] from the portal. Returns number of rows changed."""
+def apply_answers(doc, items, user, by_staff=False):
+    """items: [{question_code, selected_option, comment}] from the portal or, with by_staff, from the GRC team on the
+    customer's behalf. Returns number of rows changed."""
     if doc.status not in CUSTOMER_EDITABLE:
         frappe.throw(_("This assessment can no longer be edited."))
     snap = snapshot_of(doc)
     qmap = {q["question_code"]: q for q in snap["questions"]}
     rows = {r.question_code: r for r in doc.answers}
     changed = 0
+    touched = []
+    started = False
     for it in items or []:
         code = (it.get("question_code") or "").strip()
         if code not in qmap:
@@ -104,8 +111,12 @@ def apply_answers(doc, items, user):
             if opt and not scoring.is_valid_option(qmap[code], opt, snap):
                 frappe.throw(_("Option {0} is not allowed for question {1}.").format(opt, code))
             if opt != (row.selected_option or ""):
+                old = row.selected_option or ""
                 row.selected_option = opt
                 row.answered_on = now_datetime()
+                row.answered_by = user
+                row.answered_by_staff = 1 if by_staff else 0
+                touched.append("%s: %s" % (code, ("%s \u2192 %s" % (old, opt)) if old else opt))
                 changed += 1
         if "comment" in it:
             c = (it.get("comment") or "")[:2000]
@@ -117,7 +128,12 @@ def apply_answers(doc, items, user):
             doc.flags.transition_ok = True
             doc.status = "In Progress"
             doc.started_on = doc.started_on or now_datetime()
+            started = True
         doc.save(ignore_permissions=True)
+        if started:
+            activity.log(doc, "Status", "Draft \u2192 In Progress", user=user)
+        if touched:
+            activity.log(doc, "Answer", ("On behalf of the customer: " if by_staff else "") + "; ".join(touched[:25]), user=user)
     return changed
 
 
@@ -145,7 +161,7 @@ def submit_assessment(doc, user):
     doc.flags.transition_ok = True  # fields below are set before transition() saves
     _freeze_preliminary(doc)
     transition(doc, "Submitted", submitted_on=now_datetime())
-    recipients, lang, name = _audience(doc)
+    recipients, lang, name = _audience(doc, optional=True)
     notify.send(recipients, notify.tr("submitted_subject", lang, title=title_of(doc)),
                 notify.tr("submitted_body", lang, title=frappe.utils.escape_html(title_of(doc))), lang, name, ("GRC Assessment", doc.name))
     staff = list(notify.staff_notification_recipients())
@@ -173,6 +189,7 @@ def add_reply(doc, user, user_name, question_code, message):
         "author": user, "author_name": user_name, "author_type": "Customer", "status": "Answered", "message": message[:5000],
     })
     reply.insert(ignore_permissions=True)
+    activity.log(doc, "Clarification", "Reply" + ((" on " + code) if code else ""), user=user, question_code=code)
     for name in frappe.get_all("GRC Clarification", filters={"assessment": doc.name, "kind": "Request", "status": "Open", "question_code": code}, pluck="name"):
         frappe.db.set_value("GRC Clarification", name, "status", "Answered")
     return reply
@@ -215,6 +232,7 @@ def request_clarification(doc, user, user_name, requests):
             "message": r["message"].strip()[:5000],
         }).insert(ignore_permissions=True)
     transition(doc, "Clarification Required")
+    activity.log(doc, "Clarification", "%d clarification request(s) sent" % len(requests), user=user)
     recipients, lang, name = _audience(doc)
     note = "<br>".join(frappe.utils.escape_html(("%s: " % r["question_code"] if r.get("question_code") else "") + r["message"].strip()) for r in requests)
     notify.send(recipients, notify.tr("clarify_subject", lang, title=title_of(doc)),
@@ -259,7 +277,8 @@ def release(doc, user):
     from alphax_grc.grc import reports
     reports.generate_approved_reports(doc, user)  # raises if PDF generation fails: no release without a report
     transition(doc, "Report Released", released_on=now_datetime(), released_by=user)
-    recipients, lang, name = _audience(doc)
+    activity.log(doc, "Report", "Approved report generated (English and Arabic) and released", user=user)
+    recipients, lang, name = _audience(doc, optional=True)
     notify.send(recipients, notify.tr("released_subject", lang, title=title_of(doc)),
                 notify.tr("released_body", lang, title=frappe.utils.escape_html(title_of(doc)), level=doc.final_level, score=doc.final_score,
                           url=notify.portal_url("#/assessments/" + doc.name + "/scorecard")), lang, name, ("GRC Assessment", doc.name))

@@ -32,3 +32,12 @@ Customers see a *Preliminary* scorecard after submit, and the *Approved* scoreca
 
 ## Open decisions (per template-version switches)
 Q1 gating cap, Q20 N/A, Q13 manual vs calculated, equal vs section weights. Disclaimer, privacy and terms text are DRAFTS for legal review. See HANDOFF.md.
+
+## v0.2 changes (from the first review round)
+- **Multiple organizations per user**, with an organization switcher; optional **parent organization** (holding company). A holding company's Org Admins get a read-only *Group* view: status and released results of subsidiaries only (no answers, comments or evidence).
+- **Sign-in and registration**: clear "already registered? sign in" path, forgot password, resend code with cooldown, invitations for existing accounts are accepted after sign-in. GRC team accounts cannot be customer members (use a separate customer email to test the portal).
+- **Staff on behalf of customers**: create the organization in Desk, *Invite Customer Admin*, *Enter Answers for Customer* / *Submit for Customer* (marked in the trail), and *Transfer* an assessment to another consultant or reviewer with a required reason.
+- **Notifications**: per-user and per-organization switch for reminders and status updates. Verification codes, invitations and clarification requests are always sent.
+- **Activity trail**: GRC Activity Log (answers, evidence, status, assignment, clarification, reminders, reports). Customers see a simplified timeline (staff shown as "GRC team"); reviewer adjustments and transfers are staff-only.
+- **Slow email diagnosis**: *GRC Settings > Send Test Email* shows how many seconds the mail server took; sends slower than 5 s are written to the Error Log.
+After upgrading run `bench --site <site> migrate`.

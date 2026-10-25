@@ -10,7 +10,7 @@ from frappe.rate_limiter import rate_limit
 from frappe.utils import cint, escape_html
 
 from alphax_grc.api import auth
-from alphax_grc.grc import access, notify, scoring, workflow
+from alphax_grc.grc import access, activity, notify, scoring, workflow
 
 EDIT = access.ORG_EDIT_ROLES
 
@@ -35,9 +35,11 @@ def _need_admin(m):
         frappe.throw(_("Only an Org Admin can do this."), frappe.PermissionError)
 
 
-def _assessment(name, m):
-    """Load an assessment of the caller's organization or fail with the generic not-found."""
-    if not name or not frappe.db.exists("GRC Assessment", {"name": name, "organization": m.organization}):
+def _assessment(name, m, group_read=False):
+    """Load an assessment of the caller's organization or fail with the generic not-found.
+    group_read=True also lets an Org Admin of a holding company VIEW results of its subsidiaries."""
+    org = name and frappe.db.get_value("GRC Assessment", name, "organization")
+    if not org or not (org == m.organization or (group_read and access.can_view_group_org(m, org))):
         access.not_found()
     return frappe.get_doc("GRC Assessment", name)
 
@@ -47,18 +49,52 @@ def _jl(v):
 
 
 # ------------------------------------------------------------------ context
+def _org_brief(o):
+    return frappe.db.get_value("GRC Organization", o, ["name", "legal_name", "legal_name_ar", "parent_organization"], as_dict=True)
+
+
 @frappe.whitelist(allow_guest=True)
 def get_context():
     user = frappe.session.user
     if user == "Guest":
         return None
+    ms = access.get_memberships(user)
     m = access.get_membership(user)
     out = {"user": user, "full_name": frappe.utils.get_fullname(user), "language": notify.user_language(user),
-           "is_staff": access.is_staff(user), "membership": None}
+           "is_staff": access.is_staff(user), "membership": None, "organizations": []}
+    if out["is_staff"]:
+        out["staff_roles"] = sorted(r for r in frappe.get_roles(user) if r.startswith("GRC") or r == "System Manager")
+    for x in ms:
+        b = _org_brief(x.organization)
+        out["organizations"].append({"name": b.name, "legal_name": b.legal_name, "legal_name_ar": b.legal_name_ar, "role": x.member_role})
     if m:
-        org = frappe.db.get_value("GRC Organization", m.organization, ["name", "legal_name", "legal_name_ar"], as_dict=True)
-        out["membership"] = {"role": m.member_role, "organization": org, "can_edit": m.member_role in EDIT, "is_admin": m.member_role == "Org Admin"}
+        org = _org_brief(m.organization)
+        notify_org = bool(frappe.db.get_value("GRC Organization", m.organization, "notify_reminders"))
+        out["membership"] = {"role": m.member_role, "organization": org, "can_edit": m.member_role in EDIT, "is_admin": m.member_role == "Org Admin",
+                             "notify_me": bool(m.notify_email), "notify_org": notify_org,
+                             "has_subsidiaries": bool(m.member_role == "Org Admin" and access.subsidiaries(m.organization))}
     return out
+
+
+@frappe.whitelist()
+def switch_organization(organization):
+    user = _me()
+    if not any(x.organization == organization for x in access.get_memberships(user)):
+        access.not_found()
+    access.set_active_organization(user, organization)
+    return get_context()
+
+
+@frappe.whitelist()
+def set_notifications(for_me=None, for_org=None):
+    """Optional emails (reminders, status updates) can be switched off. Verification, invitations and clarification requests are always sent."""
+    m = _member()
+    if for_me is not None:
+        frappe.db.set_value("GRC Organization Member", m.name, "notify_email", cint(for_me))
+    if for_org is not None:
+        _need_admin(m)
+        frappe.db.set_value("GRC Organization", m.organization, "notify_reminders", cint(for_org))
+    return get_context()
 
 
 @frappe.whitelist()
@@ -78,17 +114,25 @@ def accept_invitation(token):
 
 
 @frappe.whitelist()
-def create_organization(organization):
+def create_organization(organization, parent_organization=None):
+    """Create an organization. Existing customers can create more (for example subsidiaries under a holding company)."""
     user = _me()
-    if access.get_membership(user) or frappe.db.exists("GRC Organization Member", {"user": user}):
-        frappe.throw(_("This account already belongs to an organization."))
-    v = auth.clean_org_values(organization or {})
+    if access.is_staff(user):
+        frappe.throw(_("GRC team accounts cannot own customer organizations. Create organizations in Desk."), frappe.PermissionError)
+    mine = access.get_memberships(user)
+    if len(mine) >= auth.MAX_ORGS_PER_USER:
+        frappe.throw(_("This account belongs to the maximum number of organizations."))
+    v = auth.clean_org_values(_jl(organization) if isinstance(organization, str) else (organization or {}))
     if not v.get("legal_name"):
         frappe.throw(_("Enter your organization's legal name."))
-    org = frappe.get_doc(dict(doctype="GRC Organization", status="Active", created_by_user=user,
+    parent = (parent_organization or "").strip() or None
+    if parent and not any(x.organization == parent and x.member_role == "Org Admin" for x in mine):
+        access.not_found()
+    org = frappe.get_doc(dict(doctype="GRC Organization", status="Active", created_by_user=user, parent_organization=parent,
                               preferred_language=notify.user_language(user), **v))
     org.insert(ignore_permissions=True)
     frappe.get_doc({"doctype": "GRC Organization Member", "user": user, "organization": org.name, "member_role": "Org Admin", "status": "Active"}).insert(ignore_permissions=True)
+    access.set_active_organization(user, org.name)
     return get_context()
 
 
@@ -116,7 +160,7 @@ def update_organization(organization):
 @frappe.whitelist()
 def list_members():
     m = _member()
-    members = frappe.get_all("GRC Organization Member", filters={"organization": m.organization}, fields=["name", "user", "full_name", "member_role", "status"], order_by="creation asc")
+    members = frappe.get_all("GRC Organization Member", filters={"organization": m.organization, "status": ["!=", "Removed"]}, fields=["name", "user", "full_name", "member_role", "status"], order_by="creation asc")
     invites = frappe.get_all("GRC Invitation", filters={"organization": m.organization, "status": "Pending"}, fields=["name", "email", "member_role", "expires_on"], order_by="creation desc")
     return {"members": members, "invitations": invites, "can_manage": m.member_role == "Org Admin"}
 
@@ -129,8 +173,8 @@ def invite_member(email, role):
     email = auth.clean_email(email)
     if role not in access.ORG_ROLES:
         frappe.throw(_("Choose a valid role."))
-    if frappe.db.exists("GRC Organization Member", {"user": email}):
-        frappe.throw(_("This person already belongs to an organization."))
+    if frappe.db.exists("GRC Organization Member", {"user": email, "organization": m.organization, "status": "Active"}):
+        frappe.throw(_("This person is already a member of this organization."))
     for n in frappe.get_all("GRC Invitation", filters={"organization": m.organization, "email": email, "status": "Pending"}, pluck="name"):
         frappe.db.set_value("GRC Invitation", n, "status", "Revoked")
     inv, token, link = auth.create_invitation(m.organization, email, role, frappe.session.user)
@@ -335,6 +379,7 @@ def upload_evidence(name, question_code=""):
     except Exception:
         frappe.log_error(title="GRC evidence upload failed")
         frappe.throw(_("The file could not be read. Check that it is not damaged and try again."))
+    activity.log(a, "Evidence", "Uploaded %s%s" % (doc.file_name, (" for " + code) if code else ""), question_code=code)
     return {"id": doc.name, "file_name": doc.file_name, "size": doc.file_size, "question_code": code}
 
 
@@ -352,7 +397,9 @@ def delete_evidence(file_id):
     f, a = _own_file(file_id, m)
     if a.status not in workflow.CUSTOMER_EDITABLE:
         frappe.throw(_("Evidence can no longer be changed."))
+    fname, qc = f.file_name, f.get("grc_question_code") or ""
     frappe.delete_doc("File", f.name, ignore_permissions=True)
+    activity.log(a, "Evidence", "Deleted %s" % fname, question_code=qc)
     return True
 
 
@@ -377,7 +424,9 @@ def _result_for(a):
 @frappe.whitelist()
 def get_scorecard(name):
     m = _member()
-    a = _assessment(name, m)
+    a = _assessment(name, m, group_read=True)
+    if a.organization != m.organization and a.status != "Report Released":
+        access.not_found()  # a holding company sees only released results of subsidiaries
     snap = workflow.snapshot_of(a)
     out = {"name": a.name, "status": a.status, "title": a.template_title, "released": a.status == "Report Released", "preliminary": None, "final": None}
     if a.preliminary_result and a.status in ("Submitted", "Under Review", "Clarification Required", "Resubmitted", "Approved", "Report Released"):
@@ -396,7 +445,7 @@ def get_scorecard(name):
 @frappe.whitelist()
 def download_report(name, lang="en"):
     m = _member()
-    a = _assessment(name, m)
+    a = _assessment(name, m, group_read=True)
     if a.status != "Report Released":
         access.not_found()
     lang = auth.clean_lang(lang)
@@ -418,3 +467,27 @@ def dashboard():
     latest_released = next((r for r in rows if r["released"]), None)
     return {"assessments": rows, "latest_released": latest_released,
             "open": next((r for r in rows if r["status"] in ("Draft", "In Progress", "Clarification Required")), None)}
+
+
+@frappe.whitelist()
+def get_activity(name):
+    m = _member()
+    a = _assessment(name, m)
+    return activity.customer_view(a.name)
+
+
+@frappe.whitelist()
+def group_overview():
+    """Holding company view: status and released results of subsidiaries. No answers, comments or evidence."""
+    m = _member()
+    _need_admin(m)
+    out = []
+    for org in access.subsidiaries(m.organization):
+        b = _org_brief(org)
+        rows = frappe.get_all("GRC Assessment", filters={"organization": org}, fields=["name", "template_title", "status", "due_date", "final_score", "final_level", "released_on"], order_by="creation desc")
+        items = [{"name": r.name, "title": r.template_title, "status": r.status, "due_date": r.due_date,
+                  "released": r.status == "Report Released",
+                  "final_score": r.final_score if r.status == "Report Released" else None,
+                  "final_level": r.final_level if r.status == "Report Released" else None} for r in rows]
+        out.append({"organization": org, "legal_name": b.legal_name, "legal_name_ar": b.legal_name_ar, "parent": b.parent_organization, "assessments": items})
+    return out

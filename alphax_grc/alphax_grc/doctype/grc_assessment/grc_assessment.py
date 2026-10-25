@@ -5,7 +5,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cint, getdate, today
 
-from alphax_grc.grc import access, scoring, workflow
+from alphax_grc.grc import access, activity, notify, scoring, workflow
 
 
 class GRCAssessment(Document):
@@ -23,6 +23,9 @@ class GRCAssessment(Document):
             if q["question_code"] not in have:
                 self.append("answers", {"question_code": q["question_code"], "section_code": q["section_code"]})
 
+    def after_insert(self):
+        activity.log(self, "Status", "Assessment created" + (" by the GRC team" if access.is_staff() else ""))
+
     def validate(self):
         if not self.is_new():
             if self.has_value_changed("status") and not self.flags.transition_ok:
@@ -37,6 +40,26 @@ class GRCAssessment(Document):
         self.validate_team()
         self.validate_due_date()
         self.score_answers()
+        self.collect_audit()
+
+    def collect_audit(self):
+        """Remember reviewer-side changes so on_update can write them to the activity trail (staff-only entries)."""
+        self.flags.audit = []
+        before = self.get_doc_before_save()
+        if not before:
+            return
+        old = {r.question_code: (r.reviewer_option or "") for r in before.answers}
+        for r in self.answers:
+            if (r.reviewer_option or "") != old.get(r.question_code, ""):
+                self.flags.audit.append(("Answer", "Reviewer adjusted %s: %s \u2192 %s" % (r.question_code, old.get(r.question_code) or "-", r.reviewer_option or "-"), r.question_code, 0))
+        for f, label in (("assigned_consultant", "Consultant"), ("reviewer", "Reviewer"), ("due_date", "Due date")):
+            if str(before.get(f) or "") != str(self.get(f) or ""):
+                self.flags.audit.append(("Assignment", "%s: %s \u2192 %s" % (label, before.get(f) or "-", self.get(f) or "-"), "", 0))
+
+    def on_update(self):
+        for ev, detail, code, visible in (self.flags.get("audit") or []):
+            activity.log(self, ev, detail, question_code=code, visible=visible)
+        self.flags.audit = []
 
     def validate_team(self):
         for f in ("assigned_consultant", "reviewer"):
@@ -106,9 +129,49 @@ def staff_action(name, action, note=None, requests=None):
         workflow.reopen(doc, user)
     elif action == "release":
         workflow.release(doc, user)
+    elif action == "submit_on_behalf":
+        workflow.submit_assessment(doc, user)
     else:
         frappe.throw(_("Unknown action {0}.").format(action))
     return doc.status
+
+
+@frappe.whitelist()
+def save_answers_for(name, items):
+    """GRC team enters answers on the customer's behalf (marked as such in the trail and on the answer rows)."""
+    if not access.is_staff():
+        frappe.throw(_("Not permitted"), frappe.PermissionError)
+    doc = _get(name)
+    items = json.loads(items) if isinstance(items, str) else (items or [])
+    return workflow.apply_answers(doc, items, frappe.session.user, by_staff=True)
+
+
+@frappe.whitelist()
+def transfer(name, reason, assigned_consultant=None, reviewer=None):
+    """Hand an assessment to another team member. A Manager, or the current consultant or reviewer, may do it; a reason is required."""
+    user = frappe.session.user
+    doc = frappe.get_doc("GRC Assessment", name)
+    if not (access.is_manager(user) or user in (doc.assigned_consultant, doc.reviewer)):
+        frappe.throw(_("Only a GRC Manager or the current assignee can transfer this assessment."), frappe.PermissionError)
+    reason = (reason or "").strip()
+    if not reason:
+        frappe.throw(_("Write the reason for the transfer."))
+    if not (assigned_consultant or reviewer):
+        frappe.throw(_("Choose who should take over."))
+    before = (doc.assigned_consultant, doc.reviewer)
+    if assigned_consultant:
+        doc.assigned_consultant = assigned_consultant
+    if reviewer:
+        doc.reviewer = reviewer
+    doc.save(ignore_permissions=True)
+    activity.log(doc, "Assignment", "Transferred: %s" % reason, visible=0)
+    org = frappe.db.get_value("GRC Organization", doc.organization, "legal_name")
+    url = frappe.utils.get_url_to_form("GRC Assessment", doc.name)
+    new = [u for u in (assigned_consultant, reviewer) if u and u not in before]
+    notify.send(new, "Assessment transferred to you: %s" % doc.name,
+                "%s transferred <b>%s</b> (%s) to you.<br>Reason: %s<br><a href='%s'>Open</a>" % (
+                    frappe.utils.escape_html(frappe.utils.get_fullname(user)), doc.name, frappe.utils.escape_html(org), frappe.utils.escape_html(reason), url), "en", "")
+    return doc.name
 
 
 @frappe.whitelist()
@@ -167,4 +230,5 @@ def get_review_summary(name):
             "reviewer_note": r.reviewer_note, "evidence": by_q.get(r.question_code, []),
         })
     clar = frappe.get_all("GRC Clarification", filters={"assessment": name}, fields=["name", "question_code", "kind", "author_name", "author_type", "status", "message", "creation"], order_by="creation asc")
-    return {"answers": out, "clarifications": clar, "status": doc.status}
+    trail = frappe.get_all("GRC Activity Log", filters={"assessment": name}, fields=["event_type", "actor", "actor_type", "question_code", "detail", "visible_to_customer", "creation"], order_by="creation desc", limit_page_length=200)
+    return {"answers": out, "clarifications": clar, "status": doc.status, "activity": trail}

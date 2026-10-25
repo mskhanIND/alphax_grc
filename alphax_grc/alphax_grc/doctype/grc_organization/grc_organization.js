@@ -1,6 +1,13 @@
 frappe.ui.form.on("GRC Organization", {
   refresh(frm) {
     if (frm.is_new()) return;
+    frm.add_custom_button(__("Invite Customer Admin"), () => {
+      frappe.prompt([{ fieldname: "email", label: __("Customer email"), fieldtype: "Data", options: "Email", reqd: 1 },
+                     { fieldname: "role", label: __("Role"), fieldtype: "Select", options: "Org Admin\nAssessor\nAction Owner\nViewer", default: "Org Admin" }],
+        (v) => frappe.call({ method: "alphax_grc.alphax_grc.doctype.grc_organization.grc_organization.invite_customer_admin", args: Object.assign({ organization: frm.doc.name }, v) })
+          .then((r) => frappe.msgprint({ title: __("Invitation created"), message: (r.message.email_sent ? __("Email sent. ") : __("Email could not be sent. ")) + __("Link to share:") + "<br><code>" + frappe.utils.escape_html(r.message.link) + "</code>" })),
+        __("Invite Customer Admin"));
+    });
     frm.add_custom_button(__("Assign Assessment"), () => {
       frappe.prompt([{ fieldname: "due_date", label: __("Due date"), fieldtype: "Date" },
                      { fieldname: "assigned_consultant", label: __("Consultant"), fieldtype: "Link", options: "User" },
