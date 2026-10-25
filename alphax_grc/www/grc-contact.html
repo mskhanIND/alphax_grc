@@ -1,0 +1,19 @@
+{% extends "alphax_grc/templates/site_base.html" %}
+{% block content %}
+<section class="s"><div class="wrap"><h1><span class="en">Request a consultation</span><span class="ar">اطلب استشارة</span></h1>
+<form class="c" id="cf" novalidate>
+<div><label for="fn"><span class="en">Full name</span><span class="ar">الاسم الكامل</span></label><input id="fn" required autocomplete="name"></div>
+<div><label for="em"><span class="en">Work email</span><span class="ar">البريد الإلكتروني للعمل</span></label><input id="em" type="email" required autocomplete="email" dir="ltr"></div>
+<div><label for="ph"><span class="en">Phone (optional)</span><span class="ar">الهاتف (اختياري)</span></label><input id="ph" autocomplete="tel" dir="ltr"></div>
+<div><label for="on"><span class="en">Organization</span><span class="ar">الجهة</span></label><input id="on"></div>
+<div><label for="ms"><span class="en">How can we help?</span><span class="ar">كيف يمكننا مساعدتك؟</span></label><textarea id="ms" rows="5"></textarea></div>
+<div class="hp" aria-hidden="true"><label for="cw">Company website</label><input id="cw" tabindex="-1" autocomplete="off"></div>
+<button class="btn p" type="submit"><span class="en">Send request</span><span class="ar">إرسال الطلب</span></button>
+<div id="ok" class="msg"><span class="en">Thank you. We will contact you shortly.</span><span class="ar">شكراً لكم. سنتواصل معكم قريباً.</span></div><div id="bad" class="msg bad"></div>
+</form></div></section>
+{% endblock %}
+{% block script %}<script>
+document.getElementById("cf").addEventListener("submit",function(e){e.preventDefault();var b=e.target.querySelector("button");b.disabled=true;var fd=new FormData();
+fd.append("full_name",fn.value);fd.append("email",em.value);fd.append("phone",ph.value);fd.append("organization_name",on.value);fd.append("message",ms.value);fd.append("company_website",cw.value);fd.append("preferred_language",document.documentElement.lang);fd.append("source_page","contact");
+fetch("/api/method/alphax_grc.api.auth.submit_consultation",{method:"POST",body:fd,headers:{"Accept":"application/json","X-Frappe-CSRF-Token":"{{ csrf_token }}"},credentials:"same-origin"}).then(function(r){return r.text().then(function(t){var d={};try{d=JSON.parse(t)}catch(x){}if(!r.ok)throw new Error((d.exception||"").replace(/<[^>]+>/g," ").replace(/^[^:]*:/,"").trim()||"Error");})}).then(function(){document.getElementById("ok").className="msg on";e.target.reset();b.disabled=false}).catch(function(er){var m=document.getElementById("bad");m.textContent=er.message;m.className="msg bad on";b.disabled=false})});
+</script>{% endblock %}

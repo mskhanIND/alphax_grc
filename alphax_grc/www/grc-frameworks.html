@@ -1,0 +1,12 @@
+{% extends "alphax_grc/templates/site_base.html" %}
+{% block content %}
+<section class="s"><div class="wrap"><h1><span class="en">Regulatory frameworks</span><span class="ar">الأطر التنظيمية</span></h1>
+<p class="muted"><span class="en">Frameworks relevant to Saudi organizations. Always confirm the current text with the issuing authority.</span><span class="ar">أطر ذات صلة بالجهات في المملكة. تأكد دائماً من النص الحالي لدى الجهة المصدرة.</span></p>
+<div class="grid">
+{% for f in frameworks %}
+<div class="card"><span class="tag">{{ f.authority }}</span><h3><span class="en">{{ f.framework_name }}</span><span class="ar">{{ f.framework_name_ar or f.framework_name }}</span></h3>
+<p class="muted"><span class="en">{{ f.description or "" }}</span><span class="ar">{{ f.description_ar or f.description or "" }}</span></p>
+<small class="muted">{{ f.version or "" }}{% if f.reviewed_on %} · <span class="en">Reviewed</span><span class="ar">روجع</span> {{ f.reviewed_on }}{% else %} · <span class="en">Content review pending</span><span class="ar">المراجعة قيد الإجراء</span>{% endif %}</small></div>
+{% else %}<p class="muted"><span class="en">No frameworks published yet.</span><span class="ar">لا توجد أطر منشورة بعد.</span></p>{% endfor %}
+</div></div></section>
+{% endblock %}

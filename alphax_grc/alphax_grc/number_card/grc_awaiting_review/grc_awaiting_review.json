@@ -1,0 +1,16 @@
+{
+ "docstatus": 0,
+ "doctype": "Number Card",
+ "is_public": 1,
+ "is_standard": 1,
+ "module": "AlphaX GRC",
+ "show_percentage_stats": 0,
+ "type": "Document Type",
+ "document_type": "GRC Assessment",
+ "function": "Count",
+ "modified": "2026-10-25 09:00:00.000000",
+ "owner": "Administrator",
+ "name": "Awaiting Review",
+ "label": "Awaiting Review",
+ "filters_json": "[[\"GRC Assessment\", \"status\", \"in\", [\"Submitted\", \"Resubmitted\", \"Under Review\"], false]]"
+}

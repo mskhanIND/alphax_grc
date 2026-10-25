@@ -77,7 +77,7 @@ portal, website, Desk UI, reports/PDF, reminders, tests. Nothing here has had a 
 - gating cap only when `snapshot.enable_gating` and the question is gating and the answer matches `gate_trigger`.
 - findings/actions for answers A/B/C: priority Immediate (0-3 months) / High (3-6) / Medium (6-12); recommended
   action = the next level's option text. Return everything needed for the scorecard and PDF, EN and AR.
-- Tests in `alphax_grc/tests/` must include fixtures that reproduce the Excel results (all-C = 75% Medium, mixed
+- Tests in `alphax_grc/tests/` must include fixtures that reproduce the Excel results (all-C = 75% High, mixed
   answers, N/A and gating on/off, unanswered counted as zero).
 
 **Version snapshot rule:** creating a GRC Assessment copies the whole template version (policy, sections,

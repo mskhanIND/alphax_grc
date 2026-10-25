@@ -1,0 +1,24 @@
+@font-face{font-family:"GRC Arabic";src:url(/assets/alphax_grc/fonts/NotoSansArabic-Regular.ttf) format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:"GRC Arabic";src:url(/assets/alphax_grc/fonts/NotoSansArabic-Bold.ttf) format("truetype");font-weight:700;font-display:swap}
+:root{--bg:#fff;--alt:#F4F7F9;--ink:#13232F;--muted:#586976;--line:#D5DDE3;--brand:#0B5C6B;--brand-d:#08434E;--brand-l:#E3F0F3;--accent:#C58A1B}
+@media (prefers-color-scheme:dark){:root{--bg:#0E1A21;--alt:#13232C;--ink:#E7EEF2;--muted:#9FB1BC;--line:#2A3E49;--brand:#4FB3C6;--brand-d:#7CCBDA;--brand-l:#173842}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,"GRC Arabic",sans-serif}
+html[lang=ar] body{font-family:"GRC Arabic",system-ui,sans-serif}
+html[lang=ar] .en,html:not([lang=ar]) .ar{display:none!important}
+a{color:var(--brand)}h1{font-size:clamp(2rem,5vw,3.1rem);line-height:1.15;margin:.2em 0 .4em;letter-spacing:-.01em}h2{font-size:1.7rem;line-height:1.25;margin:0 0 .6em}h3{margin:.2em 0 .3em}
+.wrap{max-width:1100px;margin:0 auto;padding:0 1.2rem}.bar{display:flex;align-items:center;gap:1.2rem;min-height:66px;flex-wrap:wrap}
+.top{border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:10}.logo{display:flex;flex-direction:column;line-height:1.05;text-decoration:none;color:var(--brand)}.logo b{font-size:1.4rem}.logo span{font-size:.75rem;color:var(--muted)}
+#mainnav{display:flex;gap:1.1rem;flex:1;flex-wrap:wrap}#mainnav a{color:var(--ink);text-decoration:none;font-weight:600;font-size:.95rem}#mainnav a:hover{color:var(--brand)}
+.actions{display:flex;gap:.5rem;align-items:center}.btn,.lang{display:inline-block;padding:.5rem 1rem;border:1px solid var(--line);border-radius:8px;color:var(--ink);text-decoration:none;font:inherit;font-weight:600;background:transparent;cursor:pointer}
+.btn.p{background:var(--brand);color:#fff;border-color:var(--brand)}@media(prefers-color-scheme:dark){.btn.p{color:#04222a}}.btn.p:hover{background:var(--brand-d)}.lang{padding:.4rem .8rem}
+.hero{padding:4.5rem 0 3.5rem;background:linear-gradient(180deg,var(--brand-l),var(--bg))}.hero p.lead{font-size:1.2rem;max-width:44rem;color:var(--muted)}.cta{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem}.cta .btn{padding:.75rem 1.3rem}
+section.s{padding:3.2rem 0}section.s.alt{background:var(--alt)}.grid{display:grid;gap:1.1rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{border:1px solid var(--line);border-radius:12px;padding:1.2rem;background:var(--bg)}.card .tag{display:inline-block;font-size:.75rem;font-weight:700;color:var(--brand);background:var(--brand-l);padding:.1rem .6rem;border-radius:20px;margin-bottom:.5rem}
+.kicker{color:var(--accent);font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.06em}.muted{color:var(--muted)}
+.steps{counter-reset:s;list-style:none;padding:0;display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.steps li{counter-increment:s;border-top:3px solid var(--brand);padding-top:.7rem}.steps li:before{content:counter(s);display:block;font-weight:800;font-size:1.6rem;color:var(--brand)}
+form.c{display:grid;gap:.9rem;max-width:620px}form.c label{font-weight:600;font-size:.9rem;display:block;margin-bottom:.2rem}form.c input,form.c textarea,form.c select{width:100%;padding:.65rem .8rem;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.hp{position:absolute;left:-9999px;height:0;overflow:hidden}.msg{padding:.8rem 1rem;border-radius:8px;background:var(--brand-l);display:none}.msg.on{display:block}.msg.bad{background:#FDE7E4;color:#7A1A12}
+.draft{border:2px dashed var(--accent);padding:.8rem 1rem;border-radius:8px;margin-bottom:1.5rem;background:#FFF8E6;color:#5C4208}
+.foot{border-top:1px solid var(--line);padding:1.6rem 0;margin-top:2rem;color:var(--muted)}.foot .wrap{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}.fl a{margin-inline-end:1rem}
+.prose{max-width:46rem}.prose h2{margin-top:1.8rem;font-size:1.3rem}
+@media(max-width:760px){#mainnav{order:3;width:100%}}

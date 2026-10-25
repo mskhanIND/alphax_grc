@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ title or platform_name }}{% endblock %} | AlphaX GRC &amp; Audit</title>
+<meta name="description" content="Saudi-focused internal audit maturity assessments, frameworks and advisory.">
+<link rel="stylesheet" href="/assets/alphax_grc/css/site.css?v=1">
+<script>try{var l=localStorage.getItem("grc_lang");if(l)document.documentElement.lang=l;if(l==="ar")document.documentElement.dir="rtl"}catch(e){}</script>
+</head>
+<body>
+<header class="top"><div class="wrap bar">
+  <a class="logo" href="/grc-home"><b>AlphaX</b><span>GRC &amp; Audit</span></a>
+  <nav aria-label="Main" id="mainnav">
+    <a href="/grc-assessments"><span class="en">Assessments</span><span class="ar">التقييمات</span></a>
+    <a href="/grc-frameworks"><span class="en">Frameworks</span><span class="ar">الأطر</span></a>
+    <a href="/grc-resources"><span class="en">Resources</span><span class="ar">الموارد</span></a>
+    <a href="/grc-about"><span class="en">About</span><span class="ar">من نحن</span></a>
+    <a href="/grc-contact"><span class="en">Contact</span><span class="ar">تواصل معنا</span></a>
+  </nav>
+  <div class="actions"><button class="lang" id="langbtn" type="button"><span class="en">العربية</span><span class="ar">English</span></button>
+  <a class="btn" href="/grc#/login"><span class="en">Sign in</span><span class="ar">دخول</span></a>
+  <a class="btn p" href="/grc#/register"><span class="en">Get started</span><span class="ar">ابدأ الآن</span></a></div>
+</div></header>
+<main>{% block content %}{% endblock %}</main>
+<footer class="foot"><div class="wrap">
+  <div><b>AlphaX GRC &amp; Audit Platform</b><br><small><span class="en">Advisory assessments. Not an audit opinion or assurance engagement.</span><span class="ar">تقييمات استشارية وليست رأي تدقيق أو مهمة تأكيد.</span></small></div>
+  <div class="fl"><a href="/grc-privacy"><span class="en">Privacy</span><span class="ar">الخصوصية</span></a> <a href="/grc-terms"><span class="en">Terms</span><span class="ar">الشروط</span></a> <a href="/grc-contact"><span class="en">Contact</span><span class="ar">تواصل</span></a></div>
+</div></footer>
+<script>
+document.getElementById("langbtn").addEventListener("click",function(){var a=document.documentElement.lang==="ar"?"en":"ar";document.documentElement.lang=a;document.documentElement.dir=a==="ar"?"rtl":"ltr";try{localStorage.setItem("grc_lang",a)}catch(e){}});
+</script>
+{% block script %}{% endblock %}
+</body></html>

@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ platform_name }}</title>
+<link rel="stylesheet" href="/assets/alphax_grc/css/grc.css?v=1">
+</head>
+<body>
+<div id="app" class="app"><div class="boot">Loading…</div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>window.GRC = {csrf: {{ csrf_token | tojson }}, platform: {{ platform_name | tojson }}};</script>
+<script src="/assets/alphax_grc/js/portal_i18n.js?v=1"></script>
+<script src="/assets/alphax_grc/js/portal.js?v=1"></script>
+</body>
+</html>

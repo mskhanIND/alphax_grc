@@ -1,0 +1,78 @@
+{
+ "doctype": "Workspace",
+ "name": "AlphaX GRC",
+ "label": "AlphaX GRC",
+ "title": "AlphaX GRC",
+ "module": "AlphaX GRC",
+ "public": 1,
+ "is_hidden": 0,
+ "sequence_id": 1.0,
+ "icon": "shield",
+ "docstatus": 0,
+ "modified": "2026-10-25 09:00:00.000000",
+ "content": "[{\"id\": \"n1\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Open Assessments\", \"col\": 4}}, {\"id\": \"n2\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Awaiting Review\", \"col\": 4}}, {\"id\": \"n3\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Clarification Pending\", \"col\": 4}}, {\"id\": \"h1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\">Work</span>\", \"col\": 12}}, {\"id\": \"s1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Assessments\", \"col\": 3}}, {\"id\": \"s2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Organizations\", \"col\": 3}}, {\"id\": \"s3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Consultation Requests\", \"col\": 3}}, {\"id\": \"s4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Templates\", \"col\": 3}}]",
+ "number_cards": [
+  {
+   "label": "Open Assessments",
+   "number_card_name": "Open Assessments"
+  },
+  {
+   "label": "Awaiting Review",
+   "number_card_name": "Awaiting Review"
+  },
+  {
+   "label": "Clarification Pending",
+   "number_card_name": "Clarification Pending"
+  }
+ ],
+ "shortcuts": [
+  {
+   "label": "Assessments",
+   "type": "DocType",
+   "link_to": "GRC Assessment",
+   "doc_view": "List"
+  },
+  {
+   "label": "Organizations",
+   "type": "DocType",
+   "link_to": "GRC Organization",
+   "doc_view": "List"
+  },
+  {
+   "label": "Consultation Requests",
+   "type": "DocType",
+   "link_to": "GRC Consultation Request",
+   "doc_view": "List"
+  },
+  {
+   "label": "Templates",
+   "type": "DocType",
+   "link_to": "GRC Template Version",
+   "doc_view": "List"
+  },
+  {
+   "label": "Survey Tracker",
+   "type": "Report",
+   "link_to": "GRC Survey Tracker",
+   "report_ref_doctype": "GRC Assessment"
+  },
+  {
+   "label": "Consultant Workload",
+   "type": "Report",
+   "link_to": "GRC Consultant Workload",
+   "report_ref_doctype": "GRC Assessment"
+  }
+ ],
+ "roles": [
+  {
+   "role": "GRC Manager"
+  },
+  {
+   "role": "GRC Consultant"
+  },
+  {
+   "role": "GRC Reviewer"
+  }
+ ],
+ "links": []
+}

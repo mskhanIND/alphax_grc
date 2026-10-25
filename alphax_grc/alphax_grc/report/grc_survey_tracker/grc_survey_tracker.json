@@ -1,0 +1,27 @@
+{
+ "doctype": "Report",
+ "name": "GRC Survey Tracker",
+ "report_name": "GRC Survey Tracker",
+ "ref_doctype": "GRC Assessment",
+ "report_type": "Script Report",
+ "is_standard": "Yes",
+ "module": "AlphaX GRC",
+ "roles": [
+  {
+   "role": "GRC Manager"
+  },
+  {
+   "role": "GRC Consultant"
+  },
+  {
+   "role": "GRC Reviewer"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "disabled": 0,
+ "add_total_row": 0,
+ "modified": "2026-10-25 09:00:00.000000",
+ "docstatus": 0
+}
