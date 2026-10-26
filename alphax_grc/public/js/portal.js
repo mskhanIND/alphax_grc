@@ -58,13 +58,13 @@
       if (!n[2]) return '<span class="nav disabled" aria-disabled="true">' + icon(n[0]) + "<span>" + t(n[1]) + '</span><em>' + t("coming_soon") + "</em></span>";
       return '<a class="nav' + (active === n[0] ? " on" : "") + '" href="#/' + n[0] + '">' + icon(n[0]) + "<span>" + t(n[1]) + "</span></a>";
     }).join("");
-    return '<div class="layout"><aside class="side"><div class="brand"><b>AlphaX</b><span>GRC &amp; Audit</span></div>' + switcher + "<nav>" + nav + "</nav>" +
+    return '<div class="layout"><aside class="side"><div class="brand"><img src="/assets/alphax_grc/images/alphax_icon.png" alt=""><div><b>AlphaX GRC</b><span>GRC &amp; Audit</span></div></div>' + switcher + "<nav>" + nav + "</nav>" +
       '<div class="side-foot"><div class="who"><strong>' + esc(S.ctx.full_name) + "</strong><small>" + esc(m ? (S.lang === "ar" && m.organization.legal_name_ar || m.organization.legal_name) : S.ctx.user) + "</small></div>" +
       '<button class="btn ghost sm" data-act="lang">' + t("language") + '</button> <button class="btn ghost sm" data-act="logout">' + t("signout") + "</button></div></aside>" +
       '<main class="main" id="main">' + inner + '<footer class="foot">' + esc(t("disclaimer")) + "</footer></main></div>";
   }
   function pubShell(inner) {
-    return '<div class="auth"><div class="auth-card"><div class="auth-top"><div class="brand dark"><b>AlphaX</b><span>GRC &amp; Audit</span></div>' +
+    return '<div class="auth"><div class="auth-card"><div class="auth-top"><div class="brand dark"><img src="/assets/alphax_grc/images/alphax_icon.png" alt=""><div><b>AlphaX GRC</b><span>GRC &amp; Audit</span></div></div>' +
       '<div><a class="link" href="/grc-home">&larr; ' + (S.lang === "ar" ? "الموقع" : "Website") + '</a> &nbsp; <button class="btn ghost sm" data-act="lang">' + t("language") + "</button></div></div>" + inner + "</div></div>";
   }
   function render(html) { $("#app").innerHTML = html; window.scrollTo(0, 0); }
@@ -161,6 +161,10 @@
       var open = d.open, rel = d.latest_released;
       var h = "<header class=\"ph\"><div><h1>" + t("welcome") + ", " + esc(S.ctx.full_name.split(" ")[0]) + "</h1></div>" +
         (m.can_edit && !open ? '<button class="btn primary" data-act="start">' + t("start_assessment") + "</button>" : "") + "</header>";
+      var sc = d.score;
+      h += '<div class="kpis"><div class="kpi k1"><small>' + t("kpi_score") + '</small><b>' + (sc && sc.score != null ? Math.round(sc.score * 10) / 10 + "%" : "&ndash;") + '</b><span>' + (sc ? esc(sc.level || "") : t("kpi_none")) + '</span></div>' +
+        '<div class="kpi k2"><small>' + t("kpi_active") + '</small><b>' + d.active_count + '</b><span>' + t("assessments") + '</span></div>' +
+        '<div class="kpi k3"><small>' + t("kpi_released") + '</small><b>' + d.released_count + '</b><span>' + t("scorecard") + "</span></div></div>";
       h += '<div class="cards">';
       if (open) {
         h += '<section class="card hl"><h3>' + esc(open.title) + "</h3>" + badge(open.status) + '<p class="muted">' + t("na_" + open.next_action) + "</p>" + progress(open.answered, open.total) +
@@ -392,7 +396,7 @@
   function viewSetup() {
     var sectors = (S.cfg && S.cfg.sectors || []).map(function (s) { return { v: s, l: s }; });
     var staff = S.ctx.is_staff;
-    render('<div class="auth"><div class="auth-card"><div class="auth-top"><div class="brand dark"><b>AlphaX</b><span>GRC &amp; Audit</span></div><div><button class="btn ghost sm" data-act="lang">' + t("language") + '</button> <button class="btn ghost sm" data-act="logout">' + t("signout") + "</button></div></div>" +
+    render('<div class="auth"><div class="auth-card"><div class="auth-top"><div class="brand dark"><img src="/assets/alphax_grc/images/alphax_icon.png" alt=""><div><b>AlphaX GRC</b><span>GRC &amp; Audit</span></div></div><div><button class="btn ghost sm" data-act="lang">' + t("language") + '</button> <button class="btn ghost sm" data-act="logout">' + t("signout") + "</button></div></div>" +
       (staff ? "<h1>" + t("welcome") + '</h1><p class="note">' + t("staff_note") + '</p><p class="muted"><b>' + esc(S.ctx.full_name) + "</b> &middot; " + esc((S.ctx.staff_roles || []).join(", ")) + "<br><small>" + t("staff_customer_hint") + '</small></p><a class="btn primary" href="/app">' + t("open_desk") + "</a>" :
         "<h1>" + t("setup_org") + "</h1><p>" + t("setup_org_text") + '</p><form id="f-setup" novalidate><div class="grid2">' + field("o_legal", t("legal_name"), { dir: "ltr" }) + field("o_legal_ar", t("legal_name_ar"), { dir: "rtl" }) + field("o_sector", t("sector"), { options: sectors }) + field("o_city", t("city")) + "</div>" +
         '<button class="btn primary" type="submit">' + t("save") + '</button></form><p class="aux">' + t("join_with_invite") + "</p>") + "</div></div>");

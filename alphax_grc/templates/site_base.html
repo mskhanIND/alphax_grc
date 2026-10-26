@@ -1,33 +1,54 @@
+{% from "alphax_grc/templates/icons.html" import icon %}
 <!doctype html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}{{ title or platform_name }}{% endblock %} | AlphaX GRC &amp; Audit</title>
-<meta name="description" content="Saudi-focused internal audit maturity assessments, frameworks and advisory.">
-<link rel="stylesheet" href="/assets/alphax_grc/css/site.css?v=1">
-<script>try{var l=localStorage.getItem("grc_lang");if(l)document.documentElement.lang=l;if(l==="ar")document.documentElement.dir="rtl"}catch(e){}</script>
+<meta name="description" content="Internal audit maturity assessments aligned with IIA GIAS and Saudi regulatory frameworks (NCA ECC, SAMA CSF, CMA, PDPL).">
+<link rel="icon" type="image/png" href="/assets/alphax_grc/images/alphax_icon.png">
+<link rel="stylesheet" href="/assets/alphax_grc/css/site.css?v=4">
+<script>try{var l=localStorage.getItem("grc_lang");if(l){document.documentElement.lang=l;if(l==="ar")document.documentElement.dir="rtl"}}catch(e){}</script>
 </head>
 <body>
-<header class="top"><div class="wrap bar">
-  <a class="logo" href="/grc-home"><b>AlphaX</b><span>GRC &amp; Audit</span></a>
-  <nav aria-label="Main" id="mainnav">
-    <a href="/grc-assessments"><span class="en">Assessments</span><span class="ar">التقييمات</span></a>
-    <a href="/grc-frameworks"><span class="en">Frameworks</span><span class="ar">الأطر</span></a>
-    <a href="/grc-resources"><span class="en">Resources</span><span class="ar">الموارد</span></a>
-    <a href="/grc-about"><span class="en">About</span><span class="ar">من نحن</span></a>
-    <a href="/grc-contact"><span class="en">Contact</span><span class="ar">تواصل معنا</span></a>
+<header class="hdr" id="hdr"><div class="wrap bar">
+  <a class="brand" href="/grc-home"><img src="/assets/alphax_grc/images/alphax_icon.png" alt=""><span><b>AlphaX GRC <span class="tag-gias">GIAS 2024</span></b><small>{{ provider_name or "IRSAA Business Solutions" }} &middot; <span class="en">Riyadh, Kingdom of Saudi Arabia</span><span class="ar">الرياض، المملكة العربية السعودية</span></small></span></a>
+  <button class="menu" id="menubtn" type="button" aria-label="Menu">{{ icon("menu") }}</button>
+  <nav class="nav" aria-label="Main">
+    <a href="/grc-home" data-p="home"><span class="en">Home</span><span class="ar">الرئيسية</span></a>
+    <a href="/grc-assessments" data-p="assessments"><span class="en">Assessment Catalogue</span><span class="ar">كتالوج التقييمات</span></a>
+    <a href="/grc-frameworks" data-p="frameworks"><span class="en">Saudi Frameworks</span><span class="ar">الأطر السعودية</span></a>
+    <a href="/grc-resources" data-p="resources"><span class="en">Resources</span><span class="ar">الموارد</span></a>
+    <a href="/grc-contact" data-p="contact"><span class="en">Contact</span><span class="ar">تواصل معنا</span></a>
   </nav>
-  <div class="actions"><button class="lang" id="langbtn" type="button"><span class="en">العربية</span><span class="ar">English</span></button>
-  <a class="btn" href="/grc#/login"><span class="en">Sign in</span><span class="ar">دخول</span></a>
+  <div class="hacts"><button class="lang" id="langbtn" type="button">{{ icon("globe") }} <span class="en">العربية</span><span class="ar">English</span></button>
+  <a class="btn" href="/grc#/login"><span class="en">Sign in</span><span class="ar">تسجيل الدخول</span></a>
   <a class="btn p" href="/grc#/register"><span class="en">Get started</span><span class="ar">ابدأ الآن</span></a></div>
 </div></header>
 <main>{% block content %}{% endblock %}</main>
-<footer class="foot"><div class="wrap">
-  <div><b>AlphaX GRC &amp; Audit Platform</b><br><small><span class="en">Advisory assessments. Not an audit opinion or assurance engagement.</span><span class="ar">تقييمات استشارية وليست رأي تدقيق أو مهمة تأكيد.</span></small></div>
-  <div class="fl"><a href="/grc-privacy"><span class="en">Privacy</span><span class="ar">الخصوصية</span></a> <a href="/grc-terms"><span class="en">Terms</span><span class="ar">الشروط</span></a> <a href="/grc-contact"><span class="en">Contact</span><span class="ar">تواصل</span></a></div>
+<footer class="ftr"><div class="wrap">
+  <div class="g">
+    <div><div class="bn"><img src="/assets/alphax_grc/images/alphax_icon.png" alt="">AlphaX GRC</div>
+      <p><span class="en">Governance, risk, compliance and internal audit assessments aligned with IIA GIAS 2024 and the Saudi regulatory landscape.</span><span class="ar">منصة تقييمات الحوكمة والمخاطر والالتزام والتدقيق الداخلي المتوافقة مع معايير IIA GIAS 2024 والمشهد التنظيمي السعودي.</span></p>
+      <a class="in" href="/grc-contact">{{ icon("pin") }} <span class="en">Riyadh, Kingdom of Saudi Arabia</span><span class="ar">الرياض، المملكة العربية السعودية</span></a>
+      {% if support_email %}<a href="mailto:{{ support_email }}">{{ icon("mail") }} {{ support_email }}</a>{% endif %}</div>
+    <div><h5><span class="en">Regulatory frameworks</span><span class="ar">الأطر التنظيمية</span></h5>
+      <a href="/grc-frameworks">NCA ECC</a><a href="/grc-frameworks">IIA GIAS</a><a href="/grc-frameworks">SAMA CSF</a><a href="/grc-frameworks">CMA Corporate Governance</a><a href="/grc-frameworks">SDAIA PDPL</a></div>
+    <div><h5><span class="en">Platform</span><span class="ar">المنصة</span></h5>
+      <a href="/grc-assessments"><span class="en">Internal Audit Maturity Assessment (20Q)</span><span class="ar">تقييم نضج التدقيق الداخلي (20 سؤالاً)</span></a>
+      <a href="/grc#/login"><span class="en">Customer portal</span><span class="ar">بوابة العملاء</span></a>
+      <a href="/app"><span class="en">GRC team workspace</span><span class="ar">مساحة عمل فريق الحوكمة</span></a>
+      <a href="/grc-resources"><span class="en">Resources and FAQs</span><span class="ar">الموارد والأسئلة الشائعة</span></a></div>
+    <div><h5><span class="en">Governance and trust</span><span class="ar">الحوكمة والثقة</span></h5>
+      <div class="trust"><b>{{ icon("shield") }} <span class="en">Isolated by organization</span><span class="ar">معزولة لكل جهة</span></b><span class="en">Each organization sees only its own assessments, answers and files. Advisory results, not an audit opinion.</span><span class="ar">لا ترى كل جهة إلا تقييماتها وإجاباتها وملفاتها. نتائج استشارية وليست رأي تدقيق.</span></div>
+      <a href="/grc-privacy"><span class="en">Privacy notice</span><span class="ar">إشعار الخصوصية</span></a><a href="/grc-terms"><span class="en">Terms of use</span><span class="ar">شروط الاستخدام</span></a></div>
+  </div>
+  <div class="cp"><span>&copy; 2026 {{ provider_name or "IRSAA Business Solutions" }}. <span class="en">All rights reserved.</span><span class="ar">جميع الحقوق محفوظة.</span></span><span>{{ icon("pin") }} <span class="en">Riyadh, Kingdom of Saudi Arabia</span><span class="ar">الرياض، المملكة العربية السعودية</span></span></div>
 </div></footer>
 <script>
+(function(){var h=document.getElementById("hdr");
 document.getElementById("langbtn").addEventListener("click",function(){var a=document.documentElement.lang==="ar"?"en":"ar";document.documentElement.lang=a;document.documentElement.dir=a==="ar"?"rtl":"ltr";try{localStorage.setItem("grc_lang",a)}catch(e){}});
+document.getElementById("menubtn").addEventListener("click",function(){h.classList.toggle("open")});
+var p=location.pathname.replace("/grc-","").replace(/^\//,"");document.querySelectorAll(".nav a").forEach(function(a){if(a.dataset.p===p||(p==="grc-home"&&a.dataset.p==="home")||(p===""&&a.dataset.p==="home"))a.classList.add("on")});})();
 </script>
 {% block script %}{% endblock %}
 </body></html>

@@ -1,23 +1,50 @@
 {% extends "alphax_grc/templates/site_base.html" %}
+{% from "alphax_grc/templates/icons.html" import icon %}
 {% block content %}
-<section class="hero"><div class="wrap">
-  <span class="kicker"><span class="en">Internal Audit Maturity</span><span class="ar">نضج التدقيق الداخلي</span></span>
-  <h1><span class="en">Know where your Internal Audit function stands. Know what to fix first.</span><span class="ar">اعرف موقع وظيفة التدقيق الداخلي لديك، واعرف ما يجب إصلاحه أولاً.</span></h1>
-  <p class="lead"><span class="en">A 20-question assessment aligned to the IIA Global Internal Audit Standards and Saudi regulatory expectations. Answer online, upload evidence, and receive a reviewed maturity scorecard with a prioritised action plan in English and Arabic.</span><span class="ar">تقييم من 20 سؤالاً متوافق مع المعايير العالمية للتدقيق الداخلي والمتطلبات التنظيمية في المملكة. أجب إلكترونياً وارفع المستندات الداعمة، واحصل على بطاقة نضج مراجَعة وخطة عمل مرتبة الأولويات بالعربية والإنجليزية.</span></p>
-  <div class="cta"><a class="btn p" href="/grc#/register"><span class="en">Start your assessment</span><span class="ar">ابدأ تقييمك</span></a><a class="btn" href="/grc-assessments"><span class="en">How it works</span><span class="ar">كيف يعمل</span></a></div>
+<section class="hero"><div class="wrap g">
+  <div>
+    <span class="pill">{{ icon("spark") }} <span class="en">Aligned with IIA GIAS 2024 &amp; Saudi regulators</span><span class="ar">متوافق مع معايير IIA GIAS 2024 والجهات التنظيمية السعودية</span></span>
+    <h1><span class="en">Benchmark your Internal Audit function. Know what to fix first.</span><span class="ar">قِس نضج وظيفة التدقيق الداخلي لديك، واعرف ما يجب إصلاحه أولاً.</span></h1>
+    <p class="lead"><span class="en">A 20-question assessment benchmarked against the IIA Global Internal Audit Standards and Saudi regulatory expectations, including NCA ECC, SAMA CSF, CMA corporate governance and PDPL. Answer online, upload evidence and receive an expert-reviewed scorecard.</span><span class="ar">تقييم من 20 سؤالاً مقارَن بمعايير التدقيق الداخلي العالمية IIA والمتطلبات التنظيمية السعودية، ومنها ضوابط NCA ECC وإطار ساما للأمن السيبراني وحوكمة هيئة السوق المالية ونظام حماية البيانات الشخصية. أجب إلكترونياً وارفع المستندات الداعمة واحصل على بطاقة أداء مراجَعة من الخبراء.</span></p>
+    <div class="cta"><a class="btn p lg" href="/grc#/register"><span class="en">Start the 20-question assessment</span><span class="ar">ابدأ تقييم الـ 20 سؤالاً</span> {{ icon("arrow","flip") }}</a><a class="btn dark lg" href="/grc-frameworks"><span class="en">Explore Saudi frameworks</span><span class="ar">استعرض الأطر السعودية</span></a></div>
+    <div class="metrics"><div><b>20 <span class="en">Qs</span><span class="ar">سؤالاً</span></b><span class="en">Standardized, 6 domains</span><span class="ar">موحّدة في 6 محاور</span></div><div><b>5 <span class="en">Bands</span><span class="ar">مستويات</span></b><span class="en">Critical to Leading</span><span class="ar">من الحرج إلى الرائد</span></div><div><b>EN + AR</b><span class="en">Interface and PDF reports</span><span class="ar">الواجهة وتقارير PDF</span></div></div>
+  </div>
+  <div class="pcard">
+    <div class="top"><div class="tt"><img class="mk" src="/assets/alphax_grc/images/alphax_icon.png" alt=""><div><h3><span class="en">Internal Audit Maturity Index</span><span class="ar">مؤشر نضج التدقيق الداخلي</span></h3><small>IIA GIAS</small></div></div><span class="chip">78.8% High</span></div>
+    <div class="row"><span><span class="en">Governance &amp; Ethics</span><span class="ar">الحوكمة والأخلاقيات</span></span><b>83.3%</b></div><div class="bar2"><i style="width:83.3%;background:#059669"></i></div>
+    <div class="row"><span><span class="en">Risk-Based Planning</span><span class="ar">التخطيط المبني على المخاطر</span></span><b>75.0%</b></div><div class="bar2"><i style="width:75%;background:#d97706"></i></div>
+    <div class="row"><span><span class="en">Execution &amp; Skepticism</span><span class="ar">التنفيذ والشك المهني</span></span><b>91.7%</b></div><div class="bar2"><i style="width:91.7%;background:#2563eb"></i></div>
+    <div class="row"><span><span class="en">Regulatory Compliance</span><span class="ar">الالتزام التنظيمي</span></span><b>66.7%</b></div><div class="bar2"><i style="width:66.7%;background:#ea580c"></i></div>
+    <div class="callout">{{ icon("check") }}<div><b><span class="en">Recommended next step:</span><span class="ar">الخطوة الموصى بها:</span></b> <span class="en">Automate issue follow-up tracking with the Audit Committee to reach Leading (level D).</span><span class="ar">أتمتة متابعة الملاحظات مع لجنة المراجعة للوصول إلى مستوى الريادة (D).</span></div></div>
+    <a class="btn block" style="margin-top:16px;background:#181818;color:#fff;border-color:#181818" href="/grc#/register">{{ icon("building") }} <span class="en">Assess your entity in 20 minutes</span><span class="ar">قيّم جهتك خلال 20 دقيقة</span></a>
+    <div class="sample"><span class="en">Illustrative sample, not a real result</span><span class="ar">نموذج توضيحي وليس نتيجة فعلية</span></div>
+  </div>
 </div></section>
-<section class="s"><div class="wrap"><h2><span class="en">How it works</span><span class="ar">كيف يعمل</span></h2>
-<ol class="steps">
-<li><b><span class="en">Register</span><span class="ar">سجّل</span></b><br><span class="muted"><span class="en">Verify your work email and set up your organization.</span><span class="ar">أكّد بريدك الإلكتروني للعمل وجهّز بيانات جهتك.</span></span></li>
-<li><b><span class="en">Answer</span><span class="ar">أجب</span></b><br><span class="muted"><span class="en">Six sections, 20 questions, with autosave and evidence upload.</span><span class="ar">ستة محاور و20 سؤالاً مع حفظ تلقائي ورفع للمستندات.</span></span></li>
-<li><b><span class="en">Expert review</span><span class="ar">مراجعة الخبراء</span></b><br><span class="muted"><span class="en">Our consultants review your answers and may ask for clarification.</span><span class="ar">يراجع مستشارونا إجاباتكم وقد يطلبون توضيحاً.</span></span></li>
-<li><b><span class="en">Get your report</span><span class="ar">استلم تقريرك</span></b><br><span class="muted"><span class="en">Approved scorecard, action plan and PDF in two languages.</span><span class="ar">بطاقة أداء معتمدة وخطة عمل وملف PDF بلغتين.</span></span></li>
-</ol></div></section>
-<section class="s alt"><div class="wrap"><h2><span class="en">Built for Saudi organizations</span><span class="ar">مصمم للجهات في المملكة</span></h2>
-<div class="grid">
-<div class="card"><h3><span class="en">Regulatory context</span><span class="ar">السياق التنظيمي</span></h3><p class="muted"><span class="en">Covers expectations from SAMA, CMA, NCA, ZATCA and PDPL alongside the IIA standards.</span><span class="ar">تغطي متطلبات البنك المركزي وهيئة السوق المالية والهيئة الوطنية للأمن السيبراني وهيئة الزكاة ونظام حماية البيانات الشخصية مع معايير IIA.</span></p></div>
-<div class="card"><h3><span class="en">Reviewed, not self-scored</span><span class="ar">مراجَع وليس تقييماً ذاتياً</span></h3><p class="muted"><span class="en">Your self-assessment is checked by a consultant before the final result is released.</span><span class="ar">يراجع مستشار تقييمكم الذاتي قبل إصدار النتيجة النهائية.</span></p></div>
-<div class="card"><h3><span class="en">Bilingual by design</span><span class="ar">ثنائي اللغة</span></h3><p class="muted"><span class="en">Full Arabic and English interface and reports, including right-to-left layout.</span><span class="ar">واجهة وتقارير كاملة بالعربية والإنجليزية مع دعم الكتابة من اليمين إلى اليسار.</span></p></div>
+
+<section class="sec"><div class="wrap">
+  <div class="head"><div class="ey"><span class="en">Regulatory alignment</span><span class="ar">المواءمة التنظيمية</span></div><h2><span class="en">Built for the Saudi regulatory environment</span><span class="ar">مصممة لبيئة الأنظمة السعودية</span></h2><p><span class="en">Alignment between internal audit, cybersecurity and regulatory mandates, so assurance work is not duplicated.</span><span class="ar">مواءمة بين التدقيق الداخلي والأمن السيبراني والمتطلبات التنظيمية لتفادي ازدواجية أعمال التأكيد.</span></p></div>
+  <div class="grid3">
+  {% for f in frameworks %}
+    <a class="card fw" href="/grc-frameworks"><div class="t"><span class="badge cat-{{ f.cat }}">{{ f.category }}</span><span>{{ f.version or "" }}</span></div>
+      <h4><span class="en">{{ f.framework_name }}</span><span class="ar">{{ f.framework_name_ar or f.framework_name }}</span></h4>
+      <p><span class="en">{{ f.description or "" }}</span><span class="ar">{{ f.description_ar or f.description or "" }}</span></p>
+      <div class="f"><span class="en">{{ f.authority }}</span><span class="ar">{{ f.authority_ar or f.authority }}</span>{{ icon("arrow","flip") }}</div></a>
+  {% endfor %}
+  </div>
+</div></section>
+
+<section class="sec white"><div class="wrap">
+  <div class="head"><div class="ey"><span class="en">Platform capabilities</span><span class="ar">قدرات المنصة</span></div><h2><span class="en">From self-assessment to verified board reporting</span><span class="ar">من التقييم الذاتي إلى تقارير مجلس الإدارة المعتمدة</span></h2></div>
+  <div class="grid4">
+    <div class="card cap"><div class="ic" style="background:#12506E">{{ icon("chart") }}</div><h4><span class="en">Maturity assessment</span><span class="ar">تقييم النضج</span></h4><p><span class="en">20 questions in six domains with four maturity levels each, autosave and evidence upload.</span><span class="ar">20 سؤالاً في ستة محاور بأربعة مستويات نضج لكل سؤال، مع حفظ تلقائي ورفع المستندات الداعمة.</span></p><span class="live"><span class="en">Available now</span><span class="ar">متاح الآن</span></span></div>
+    <div class="card cap"><div class="ic" style="background:#065f46">{{ icon("users") }}</div><h4><span class="en">Expert review</span><span class="ar">مراجعة الخبراء</span></h4><p><span class="en">Consultants review your answers, ask for clarification and approve the result before release.</span><span class="ar">يراجع المستشارون إجاباتكم ويطلبون التوضيح ويعتمدون النتيجة قبل إصدارها.</span></p><span class="live"><span class="en">Available now</span><span class="ar">متاح الآن</span></span></div>
+    <div class="card cap"><div class="ic" style="background:#b45309">{{ icon("file") }}</div><h4><span class="en">Bilingual reports</span><span class="ar">تقارير بلغتين</span></h4><p><span class="en">Approved scorecard, prioritised action plan and PDF report in English and Arabic.</span><span class="ar">بطاقة أداء معتمدة وخطة عمل مرتبة الأولويات وتقرير PDF بالعربية والإنجليزية.</span></p><span class="live"><span class="en">Available now</span><span class="ar">متاح الآن</span></span></div>
+    <div class="card cap"><div class="ic" style="background:#1e40af">{{ icon("trend") }}</div><h4><span class="en">Action tracking and benchmarks</span><span class="ar">متابعة الإجراءات والمقارنات</span></h4><p><span class="en">Track corrective actions to closure and compare anonymously with peers.</span><span class="ar">متابعة الإجراءات التصحيحية حتى الإغلاق والمقارنة المجهّلة مع النظراء.</span></p><span class="soon"><span class="en">Coming soon</span><span class="ar">قريباً</span></span></div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="wrap" style="max-width:980px"><div class="band">
+  <div><h3><span class="en">Ready to benchmark your Internal Audit maturity?</span><span class="ar">جاهز لقياس نضج التدقيق الداخلي لديك؟</span></h3><p><span class="en">Start the assessment today, or book a consultation with IRSAA experts for an external quality assessment (QAIP).</span><span class="ar">ابدأ التقييم اليوم، أو احجز استشارة مع خبراء إرساء لتقييم جودة خارجي (QAIP).</span></p></div>
+  <div class="cta" style="margin:0"><a class="btn w lg" href="/grc#/register"><span class="en">Start assessment</span><span class="ar">ابدأ التقييم</span></a><a class="btn o lg" href="/grc-contact"><span class="en">Request consultation</span><span class="ar">اطلب استشارة</span></a></div>
 </div></div></section>
-<section class="s"><div class="wrap"><h2><span class="en">Need help beyond the assessment?</span><span class="ar">تحتاج دعماً يتجاوز التقييم؟</span></h2><p class="muted"><span class="en">Talk to our team about closing the gaps your scorecard reveals.</span><span class="ar">تحدث مع فريقنا حول سد الفجوات التي تكشفها بطاقة الأداء.</span></p><a class="btn p" href="/grc-contact"><span class="en">Request a consultation</span><span class="ar">اطلب استشارة</span></a></div></section>
 {% endblock %}

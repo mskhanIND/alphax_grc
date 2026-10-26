@@ -465,7 +465,13 @@ def dashboard():
     m = _member()
     rows = list_assessments()
     latest_released = next((r for r in rows if r["released"]), None)
-    return {"assessments": rows, "latest_released": latest_released,
+    score = None
+    if latest_released:
+        v = frappe.db.get_value("GRC Assessment", latest_released["name"], ["final_score", "final_level"], as_dict=True)
+        score = {"score": v.final_score, "level": v.final_level, "title": latest_released["title"], "name": latest_released["name"]}
+    return {"assessments": rows, "latest_released": latest_released, "score": score,
+            "active_count": len([r for r in rows if r["status"] not in ("Report Released",)]),
+            "released_count": len([r for r in rows if r["released"]]),
             "open": next((r for r in rows if r["status"] in ("Draft", "In Progress", "Clarification Required")), None)}
 
 

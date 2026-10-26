@@ -1,6 +1,9 @@
 {% extends "alphax_grc/templates/site_base.html" %}
+{% from "alphax_grc/templates/icons.html" import icon %}
 {% block content %}
-<section class="s"><div class="wrap"><h1><span class="en">Request a consultation</span><span class="ar">اطلب استشارة</span></h1>
+<section class="ph"><div class="wrap"><h1><span class="en">Request a consultation</span><span class="ar">اطلب استشارة</span></h1>
+<p><span class="en">Tell us what you need and the GRC advisory team will contact you.</span><span class="ar">أخبرنا بما تحتاجه وسيتواصل معك فريق استشارات الحوكمة.</span></p>
+<div class="cgrid" style="margin-top:24px"><div class="card">
 <form class="c" id="cf" novalidate>
 <div><label for="fn"><span class="en">Full name</span><span class="ar">الاسم الكامل</span></label><input id="fn" required autocomplete="name"></div>
 <div><label for="em"><span class="en">Work email</span><span class="ar">البريد الإلكتروني للعمل</span></label><input id="em" type="email" required autocomplete="email" dir="ltr"></div>
@@ -8,9 +11,14 @@
 <div><label for="on"><span class="en">Organization</span><span class="ar">الجهة</span></label><input id="on"></div>
 <div><label for="ms"><span class="en">How can we help?</span><span class="ar">كيف يمكننا مساعدتك؟</span></label><textarea id="ms" rows="5"></textarea></div>
 <div class="hp" aria-hidden="true"><label for="cw">Company website</label><input id="cw" tabindex="-1" autocomplete="off"></div>
-<button class="btn p" type="submit"><span class="en">Send request</span><span class="ar">إرسال الطلب</span></button>
+<button class="btn p lg" type="submit"><span class="en">Send request</span><span class="ar">إرسال الطلب</span></button>
 <div id="ok" class="msg"><span class="en">Thank you. We will contact you shortly.</span><span class="ar">شكراً لكم. سنتواصل معكم قريباً.</span></div><div id="bad" class="msg bad"></div>
-</form></div></section>
+</form></div>
+<div class="card"><h3 style="font-size:16px;margin-bottom:10px"><span class="en">Other ways to reach us</span><span class="ar">طرق أخرى للتواصل</span></h3>
+<p style="font-size:13.5px;color:var(--slate)">{{ icon("pin") }} <span class="en">{{ provider_name }}, Riyadh, Kingdom of Saudi Arabia</span><span class="ar">{{ provider_name }}، الرياض، المملكة العربية السعودية</span></p>
+{% if support_email %}<p style="font-size:13.5px">{{ icon("mail") }} <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>{% endif %}
+<p style="font-size:12.5px;color:var(--slate)"><span class="en">Looking for the assessment itself? <a href="/grc#/register">Create an account</a> or <a href="/grc#/login">sign in</a>.</span><span class="ar">تبحث عن التقييم نفسه؟ <a href="/grc#/register">أنشئ حساباً</a> أو <a href="/grc#/login">سجّل الدخول</a>.</span></p></div></div>
+</div></section>
 {% endblock %}
 {% block script %}<script>
 document.getElementById("cf").addEventListener("submit",function(e){e.preventDefault();var b=e.target.querySelector("button");b.disabled=true;var fd=new FormData();
