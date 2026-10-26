@@ -10,7 +10,7 @@
  "icon": "shield",
  "docstatus": 0,
  "modified": "2026-10-25 09:00:00.000000",
- "content": "[{\"id\": \"n1\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Open Assessments\", \"col\": 4}}, {\"id\": \"n2\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Awaiting Review\", \"col\": 4}}, {\"id\": \"n3\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Clarification Pending\", \"col\": 4}}, {\"id\": \"h1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\">Work</span>\", \"col\": 12}}, {\"id\": \"s1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Assessments\", \"col\": 3}}, {\"id\": \"s2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Organizations\", \"col\": 3}}, {\"id\": \"s3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Consultation Requests\", \"col\": 3}}, {\"id\": \"s4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Templates\", \"col\": 3}}]",
+ "content": "[{\"id\": \"n1\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Open Assessments\", \"col\": 4}}, {\"id\": \"n2\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Awaiting Review\", \"col\": 4}}, {\"id\": \"n3\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Clarification Pending\", \"col\": 4}}, {\"id\": \"h1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\">Work</span>\", \"col\": 12}}, {\"id\": \"s1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Assessments\", \"col\": 3}}, {\"id\": \"s2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Organizations\", \"col\": 3}}, {\"id\": \"s5\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Customer Messages\", \"col\": 3}}, {\"id\": \"s3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Consultation Requests\", \"col\": 3}}, {\"id\": \"s4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Templates\", \"col\": 3}}]",
  "number_cards": [
   {
    "label": "Open Assessments",
@@ -36,6 +36,12 @@
    "label": "Organizations",
    "type": "DocType",
    "link_to": "GRC Organization",
+   "doc_view": "List"
+  },
+  {
+   "label": "Customer Messages",
+   "type": "DocType",
+   "link_to": "GRC Message",
    "doc_view": "List"
   },
   {

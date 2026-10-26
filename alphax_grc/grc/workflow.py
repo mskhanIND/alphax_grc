@@ -21,6 +21,8 @@ TRANSITIONS = {
     ("In Progress", "Submitted"),
     ("Submitted", "Under Review"),
     ("Under Review", "Clarification Required"),
+    ("Submitted", "Clarification Required"),
+    ("Resubmitted", "Clarification Required"),
     ("Clarification Required", "Resubmitted"),
     ("Resubmitted", "Under Review"),
     ("Under Review", "Approved"),
@@ -220,8 +222,8 @@ def start_review(doc, user):
 
 def request_clarification(doc, user, user_name, requests):
     """requests: [{question_code, message}]"""
-    if doc.status != "Under Review":
-        frappe.throw(_("Clarification can only be requested while the assessment is under review."))
+    if doc.status not in ("Submitted", "Under Review", "Resubmitted"):
+        frappe.throw(_("Clarification can only be requested on a submitted assessment that is not yet approved."))
     requests = [r for r in (requests or []) if (r.get("message") or "").strip()]
     if not requests:
         frappe.throw(_("Write at least one clarification request."))

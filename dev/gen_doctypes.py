@@ -306,6 +306,18 @@ doctype("GRC Activity Log", [
     F("visible_to_customer", "Check", "Visible to customer", default="1"),
 ], [P("S", "r"), P("M", "r"), P("C", "r"), P("R", "r")], autoname="hash", title_field="event_type", track_changes=0, sort_field="creation")
 
+doctype("GRC Message", [
+    F("organization", "Link", "Organization", options="GRC Organization", reqd=1, in_list_view=1, in_standard_filter=1),
+    F("assessment", "Link", "Assessment (optional)", options="GRC Assessment", in_standard_filter=1),
+    F("kind", "Select", "Kind", options="Message\nChange Request", default="Message", in_list_view=1, in_standard_filter=1),
+    F("sender_type", "Select", "From", options="Customer\nStaff", read_only=1, in_list_view=1, in_standard_filter=1),
+    F("sender", "Link", "Sender", options="User", read_only=1),
+    F("sender_name", "Data", "Sender name", read_only=1),
+    F("body", "Text", "Message", reqd=1),
+    F("read_by_customer", "Check", "Read by customer", default="0", read_only=1),
+    F("read_by_staff", "Check", "Read by GRC team", default="0", read_only=1, in_list_view=1),
+], [P("S", "rwcd"), P("M", "rwc"), P("C", "rwc"), P("R", "rwc")], autoname="hash", title_field="sender_name", track_changes=0, sort_field="creation")
+
 doctype("GRC Reminder", [
     F("assessment", "Link", "Assessment", options="GRC Assessment", reqd=1, in_list_view=1, in_standard_filter=1),
     F("organization", "Link", "Organization", options="GRC Organization", fetch_from="assessment.organization", read_only=1, in_list_view=1),

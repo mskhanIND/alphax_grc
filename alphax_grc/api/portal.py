@@ -10,7 +10,7 @@ from frappe.rate_limiter import rate_limit
 from frappe.utils import cint, escape_html
 
 from alphax_grc.api import auth
-from alphax_grc.grc import access, activity, notify, scoring, workflow
+from alphax_grc.grc import access, activity, notify, reports, scoring, workflow
 
 EDIT = access.ORG_EDIT_ROLES
 
@@ -67,7 +67,10 @@ def get_context():
     for x in ms:
         b = _org_brief(x.organization)
         out["organizations"].append({"name": b.name, "legal_name": b.legal_name, "legal_name_ar": b.legal_name_ar, "role": x.member_role})
+    out["profile"] = {"mobile_no": frappe.db.get_value("User", user, "mobile_no") or "", "email": user}
+    out["support_email"] = frappe.db.get_single_value("GRC Settings", "support_email") or ""
     if m:
+        out["unread_messages"] = frappe.db.count("GRC Message", {"organization": m.organization, "sender_type": "Staff", "read_by_customer": 0})
         org = _org_brief(m.organization)
         notify_org = bool(frappe.db.get_value("GRC Organization", m.organization, "notify_reminders"))
         out["membership"] = {"role": m.member_role, "organization": org, "can_edit": m.member_role in EDIT, "is_admin": m.member_role == "Org Admin",
@@ -497,3 +500,110 @@ def group_overview():
                   "final_level": r.final_level if r.status == "Report Released" else None} for r in rows]
         out.append({"organization": org, "legal_name": b.legal_name, "legal_name_ar": b.legal_name_ar, "parent": b.parent_organization, "assessments": items})
     return out
+
+
+# ------------------------------------------------------------------ organizations list, profile, messages, downloads
+@frappe.whitelist()
+def list_organizations():
+    user = _me()
+    active = access.get_membership(user)
+    out = []
+    for x in access.get_memberships(user):
+        b = _org_brief(x.organization)
+        rows = frappe.get_all("GRC Assessment", filters={"organization": x.organization}, fields=["status"])
+        out.append({"name": b.name, "legal_name": b.legal_name, "legal_name_ar": b.legal_name_ar, "role": x.member_role, "parent": b.get("parent_organization"),
+                    "assessments": len(rows), "open": len([r for r in rows if r.status != "Report Released"]),
+                    "released": len([r for r in rows if r.status == "Report Released"]), "active": bool(active and active.organization == x.organization)})
+    return out
+
+
+@frappe.whitelist()
+def update_profile(full_name, mobile_no=""):
+    user = _me()
+    full_name = (full_name or "").strip()[:140]
+    if not full_name:
+        frappe.throw(_("Enter your name."))
+    u = frappe.get_doc("User", user)
+    u.first_name, u.last_name, u.mobile_no = full_name, "", (mobile_no or "").strip()[:30]
+    u.save(ignore_permissions=True)
+    getattr(frappe.local, "fullnames", {}).pop(user, None)
+    return get_context()
+
+
+@frappe.whitelist()
+@rate_limit(limit=10, seconds=3600)
+def change_password(old_password, new_password):
+    from frappe.utils.password import check_password, update_password
+    user = _me()
+    if len(new_password or "") < 8 or new_password.lower() == (old_password or "").lower():
+        frappe.throw(_("Use a new password of at least 8 characters."))
+    try:
+        check_password(user, old_password)
+    except frappe.AuthenticationError:
+        frappe.throw(_("Your current password is not correct."))
+    from frappe.utils.password_strength import test_password_strength
+    st = test_password_strength(new_password)
+    if st.get("feedback", {}).get("password_policy_validation_passed") is False:
+        frappe.throw(_("Choose a stronger password."))
+    update_password(user, new_password)
+    return True
+
+
+@frappe.whitelist()
+def list_messages(assessment=None):
+    m = _member()
+    filters = {"organization": m.organization}
+    if assessment:
+        _assessment(assessment, m)
+        filters["assessment"] = assessment
+    rows = frappe.get_all("GRC Message", filters=filters, fields=["name", "assessment", "kind", "sender_type", "sender_name", "body", "creation", "read_by_customer"], order_by="creation asc", limit=500)
+    for r in rows:
+        if r.sender_type == "Staff":
+            r.sender_name = _("GRC team")
+    unread = [r.name for r in rows if r.sender_type == "Staff" and not r.read_by_customer]
+    for n in unread:
+        frappe.db.set_value("GRC Message", n, "read_by_customer", 1, update_modified=False)
+    return rows
+
+
+@frappe.whitelist()
+@rate_limit(limit=30, seconds=3600)
+def send_message(body, assessment=None):
+    m = _member()
+    body = (body or "").strip()
+    if not body:
+        frappe.throw(_("Write a message first."))
+    if assessment:
+        _assessment(assessment, m)
+    frappe.get_doc({"doctype": "GRC Message", "organization": m.organization, "assessment": assessment or None, "kind": "Message", "sender_type": "Customer",
+                    "sender": m.user, "sender_name": frappe.utils.get_fullname(m.user), "body": body}).insert(ignore_permissions=True)
+    return list_messages(assessment)
+
+
+@frappe.whitelist()
+@rate_limit(limit=10, seconds=3600)
+def request_change(name, message):
+    """After submission the answers are locked. The customer asks the GRC team to return the assessment for editing."""
+    m = _member()
+    _need_edit(m)
+    a = _assessment(name, m)
+    if a.status not in ("Submitted", "Under Review", "Resubmitted"):
+        frappe.throw(_("A change request is only possible while the assessment is submitted or under review."))
+    message = (message or "").strip()
+    if not message:
+        frappe.throw(_("Tell the GRC team what you want to change."))
+    frappe.get_doc({"doctype": "GRC Message", "organization": m.organization, "assessment": a.name, "kind": "Change Request", "sender_type": "Customer",
+                    "sender": m.user, "sender_name": frappe.utils.get_fullname(m.user), "body": message}).insert(ignore_permissions=True)
+    activity.log(a, "Note", "Change requested by the customer", user=m.user)
+    return True
+
+
+@frappe.whitelist()
+def download_responses(name, lang="en"):
+    m = _member()
+    a = _assessment(name, m)
+    lang = auth.clean_lang(lang)
+    frappe.local.response.filename = "%s-responses-%s.pdf" % (a.name, lang)
+    frappe.local.response.filecontent = reports.responses_pdf(a, lang)
+    frappe.local.response.type = "download"
+    frappe.local.response.display_content_as = "attachment"

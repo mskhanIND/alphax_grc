@@ -41,3 +41,11 @@ Q1 gating cap, Q20 N/A, Q13 manual vs calculated, equal vs section weights. Disc
 - **Activity trail**: GRC Activity Log (answers, evidence, status, assignment, clarification, reminders, reports). Customers see a simplified timeline (staff shown as "GRC team"); reviewer adjustments and transfers are staff-only.
 - **Slow email diagnosis**: *GRC Settings > Send Test Email* shows how many seconds the mail server took; sends slower than 5 s are written to the Error Log.
 After upgrading run `bench --site <site> migrate`.
+
+## v0.4
+- My organizations page (all memberships with counts); sidebar switcher is the single selector; Add organization lives on that page.
+- Customer Messages (GRC Message): customers write to the GRC team per organization or per assessment; staff reply in Desk (customer gets an email and an unread badge).
+- Change request on submitted assessments; staff use "Return to Customer for Edit" on the assessment to reopen it for editing.
+- Download my answers (PDF) at any stage; the scored report is still available only after release.
+- Profile page: name, mobile, language, change password. EN | AR segmented switch.
+- After pulling: `bench --site <site> migrate` and `bench build --app alphax_grc`.

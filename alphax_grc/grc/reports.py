@@ -147,3 +147,55 @@ def preliminary_report(name, lang="en"):
     frappe.local.response.filename = "%s-preliminary-%s.pdf" % (name, lang)
     frappe.local.response.filecontent = make_pdf(doc, res, "ar" if lang == "ar" else "en", True)
     frappe.local.response.type = "download"
+
+
+RT = {
+    "en": {"title": "Assessment responses", "sub": "Your submitted answers. This is not the scored report.", "q": "Question", "ans": "Your answer", "cmt": "Comment",
+           "ev": "Evidence", "na": "Not answered", "status": "Status", "org": "Organization", "ref": "Assessment", "date": "Generated on"},
+    "ar": {"title": "إجابات التقييم", "sub": "إجاباتكم المرسلة. هذه ليست التقرير المقيَّم.", "q": "السؤال", "ans": "إجابتكم", "cmt": "تعليق",
+           "ev": "المرفقات", "na": "غير مجاب", "status": "الحالة", "org": "الجهة", "ref": "التقييم", "date": "تاريخ الإنشاء"},
+}
+
+
+def responses_pdf(doc, lang="en"):
+    """The customer's own answers as a PDF. No score, no reviewer data. Available at any stage."""
+    ar = lang == "ar"
+    t = RT[lang]
+    snap = workflow.snapshot_of(doc)
+    answers = {r.question_code: r for r in doc.answers}
+    files = {}
+    for f in frappe.get_all("File", filters={"attached_to_doctype": "GRC Assessment", "attached_to_name": doc.name, "is_private": 1}, fields=["file_name", "grc_question_code"]):
+        files.setdefault(f.grc_question_code, []).append(f.file_name)
+    org = frappe.db.get_value("GRC Organization", doc.organization, ["legal_name", "legal_name_ar"], as_dict=True)
+    css = CSS % {"reg": _font("NotoSansArabic-Regular.ttf"), "bold": _font("NotoSansArabic-Bold.ttf"), "dir": "rtl" if ar else "ltr", "align": "right" if ar else "left"}
+    e = _esc
+    h = ["<html><head><meta charset='utf-8'><style>%s</style></head><body>" % css,
+         "<h1>%s</h1><div class='meta'>%s<br>%s: %s &nbsp;|&nbsp; %s: %s &nbsp;|&nbsp; %s: %s &nbsp;|&nbsp; %s: %s</div>" % (
+             t["title"], t["sub"], t["org"], e(org.legal_name_ar if ar and org.legal_name_ar else org.legal_name), t["ref"], e(doc.name), t["status"], e(doc.status), t["date"], formatdate(now_datetime().date()))]
+    for sec in snap["sections"]:
+        h.append("<h2>%s</h2><table><tr><th style='width:34%%'>%s</th><th>%s</th></tr>" % (e((sec.get("title_ar") if ar else None) or sec["title"]), t["q"], t["ans"]))
+        for q in [x for x in snap["questions"] if x["section_code"] == sec["section_code"]]:
+            a = answers.get(q["question_code"])
+            sel = a.selected_option if a and a.selected_option else None
+            if sel == "NA":
+                txt = "N/A"
+            elif sel:
+                key = "option_%s%s" % (sel.lower(), "_ar" if ar else "")
+                txt = "<b>%s</b> - %s" % (e(sel), e(q.get(key) or q.get("option_%s" % sel.lower())))
+            else:
+                txt = "<i>%s</i>" % t["na"]
+            extra = ""
+            if a and a.comment:
+                extra += "<div><span class='lb'>%s:</span> %s</div>" % (t["cmt"], e(a.comment))
+            if files.get(q["question_code"]):
+                extra += "<div><span class='lb'>%s:</span> %s</div>" % (t["ev"], e(", ".join(files[q["question_code"]])))
+            h.append("<tr><td><b>%s</b> %s</td><td>%s%s</td></tr>" % (e(q["question_code"]), e((q.get("question_text_ar") if ar else None) or q["question_text"]), txt, extra))
+        h.append("</table>")
+    h.append("<div class='disc'>%s</div></body></html>" % e(frappe.db.get_single_value("GRC Settings", "report_disclaimer_ar" if ar else "report_disclaimer_en") or DEFAULT_DISCLAIMER[lang]))
+    import pdfkit
+    opts = {"page-size": "A4", "margin-top": "14mm", "margin-bottom": "14mm", "margin-left": "12mm", "margin-right": "12mm", "encoding": "UTF-8",
+            "footer-center": "[page] / [topage]", "footer-font-size": "8", "disable-javascript": "", "quiet": ""}
+    try:
+        return pdfkit.from_string("".join(h), False, options=opts)
+    except OSError as ex:
+        frappe.throw(_("The PDF engine (wkhtmltopdf) is not available: {0}").format(ex))

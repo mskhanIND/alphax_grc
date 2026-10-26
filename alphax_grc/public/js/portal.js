@@ -14,6 +14,9 @@
   function stLabel(s) { return t("st_" + String(s).replace(/ /g, "_")); }
   function fmtDate(d) { if (!d) return "-"; try { return new Date(d).toLocaleDateString(S.lang === "ar" ? "ar-SA" : "en-GB", { year: "numeric", month: "short", day: "numeric" }); } catch (e) { return d; } }
   function toast(msg, bad) { var el = $("#toast"); el.textContent = msg; el.className = "toast show" + (bad ? " bad" : ""); clearTimeout(toast._t); toast._t = setTimeout(function () { el.className = "toast"; }, 3800); }
+  function langSwitch() {
+    return '<span class="seg" role="group" aria-label="Language"><button type="button" data-act="lang" data-l="en" aria-pressed="' + (S.lang === "en") + '">EN</button><button type="button" data-act="lang" data-l="ar" aria-pressed="' + (S.lang === "ar") + '">\u0639\u0631\u0628\u064a</button></span>';
+  }
   function applyLang() { document.documentElement.lang = S.lang; document.documentElement.dir = S.lang === "ar" ? "rtl" : "ltr"; try { localStorage.setItem("grc_lang", S.lang); } catch (e) {} }
 
   function serverMessage(r, data) {
@@ -44,28 +47,30 @@
   function fail(e) { if (e && e.session) { S.ctx = null; go("#/login"); } toast((e && e.message) || t("err_generic"), true); }
 
   // ---------------------------------------------------------------- layout
-  var NAV = [["dashboard", "dashboard", true], ["assessments", "assessments", true], ["organization", "organization", true], ["members", "members", true],
+  var NAV = [["dashboard", "dashboard", true], ["assessments", "assessments", true], ["messages", "msgs", true], ["organizations", "my_orgs", true], ["organization", "org_title", true], ["members", "members", true],
              ["actions", "actions", false], ["benchmarks", "benchmarks", false], ["frameworks", "frameworks", false]];
-  var ICON = { group: "M3 21V10l6-4v15M9 21V3l12 5v13M13 11h4M13 15h4", dashboard: "M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z", assessments: "M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h8", organization: "M4 21V8l8-5 8 5v13M9 21v-6h6v6", members: "M16 11a4 4 0 100-8 4 4 0 000 8zM3 21c0-4 3-7 7-7s7 3 7 7", actions: "M9 11l3 3 8-8M4 12v8h14", benchmarks: "M4 20V10M10 20V4M16 20v-8M22 20H2", frameworks: "M12 2l9 5-9 5-9-5zM3 12l9 5 9-5M3 17l9 5 9-5" };
+  var ICON = { messages: "M4 5h16v11H9l-5 4zM8 9h8M8 12h5", organizations: "M3 21V9l5-3v15M8 21V4l8 4v13M16 21V11l5 2v8", profile: "M12 12a4 4 0 100-8 4 4 0 000 8zM4 21c0-4 4-7 8-7s8 3 8 7", group: "M3 21V10l6-4v15M9 21V3l12 5v13M13 11h4M13 15h4", dashboard: "M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z", assessments: "M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h8", organization: "M4 21V8l8-5 8 5v13M9 21v-6h6v6", members: "M16 11a4 4 0 100-8 4 4 0 000 8zM3 21c0-4 3-7 7-7s7 3 7 7", actions: "M9 11l3 3 8-8M4 12v8h14", benchmarks: "M4 20V10M10 20V4M16 20v-8M22 20H2", frameworks: "M12 2l9 5-9 5-9-5zM3 12l9 5 9-5M3 17l9 5 9-5" };
   function icon(n) { return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + (ICON[n] || "") + '"/></svg>'; }
 
   function shell(active, inner) {
     var m = S.ctx && S.ctx.membership;
-    var navItems = NAV.slice(); if (m && m.has_subsidiaries) navItems.splice(4, 0, ["group", "group", true]);
+    if (m) m.unread_n = (S.ctx && S.ctx.unread_messages) || 0;
+    var navItems = NAV.slice(); if (m && m.has_subsidiaries) navItems.splice(6, 0, ["group", "group", true]);
     var orgs = (S.ctx && S.ctx.organizations) || [];
-    var switcher = orgs.length > 1 ? '<label class="orgsw"><small>' + t("switch_org") + '</small><select data-switch="1">' + orgs.map(function (o) { return '<option value="' + esc(o.name) + '"' + (m && o.name === m.organization.name ? " selected" : "") + ">" + esc(S.lang === "ar" && o.legal_name_ar || o.legal_name) + "</option>"; }).join("") + "</select></label>" : "";
+    var cur = m ? (S.lang === "ar" && m.organization.legal_name_ar || m.organization.legal_name) : "";
+    var switcher = '<div class="orgsw"><small>' + t("switch_org") + (orgs.length > 1 ? " (" + orgs.length + ")" : "") + "</small>" + (orgs.length > 1 ? '<select data-switch="1">' + orgs.map(function (o) { return '<option value="' + esc(o.name) + '"' + (m && o.name === m.organization.name ? " selected" : "") + ">" + esc(S.lang === "ar" && o.legal_name_ar || o.legal_name) + "</option>"; }).join("") + "</select>" : '<div class="orgone">' + esc(cur) + "</div>") + "</div>";
     var nav = navItems.map(function (n) {
       if (!n[2]) return '<span class="nav disabled" aria-disabled="true">' + icon(n[0]) + "<span>" + t(n[1]) + '</span><em>' + t("coming_soon") + "</em></span>";
-      return '<a class="nav' + (active === n[0] ? " on" : "") + '" href="#/' + n[0] + '">' + icon(n[0]) + "<span>" + t(n[1]) + "</span></a>";
+      return '<a class="nav' + (active === n[0] ? " on" : "") + '" href="#/' + n[0] + '">' + icon(n[0]) + "<span>" + t(n[1]) + "</span>" + (n[0] === "messages" && m && m.unread_n ? '<b class="dot">' + m.unread_n + "</b>" : "") + "</a>";
     }).join("");
     return '<div class="layout"><aside class="side"><div class="brand"><img src="/assets/alphax_grc/images/alphax_icon.png" alt=""><div><b>AlphaX GRC</b><span>GRC &amp; Audit</span></div></div>' + switcher + "<nav>" + nav + "</nav>" +
-      '<div class="side-foot"><div class="who"><strong>' + esc(S.ctx.full_name) + "</strong><small>" + esc(m ? (S.lang === "ar" && m.organization.legal_name_ar || m.organization.legal_name) : S.ctx.user) + "</small></div>" +
-      '<button class="btn ghost sm" data-act="lang">' + t("language") + '</button> <button class="btn ghost sm" data-act="logout">' + t("signout") + "</button></div></aside>" +
+      '<div class="side-foot"><a class="who" href="#/profile">' + icon("profile") + '<span><strong>' + esc(S.ctx.full_name) + "</strong><small>" + esc(S.ctx.user) + "</small></span></a>" +
+      '' + langSwitch() + ' <button class="btn ghost sm" data-act="logout">' + t("signout") + "</button></div></aside>" +
       '<main class="main" id="main">' + inner + '<footer class="foot">' + esc(t("disclaimer")) + "</footer></main></div>";
   }
   function pubShell(inner) {
     return '<div class="auth"><div class="auth-card"><div class="auth-top"><div class="brand dark"><img src="/assets/alphax_grc/images/alphax_icon.png" alt=""><div><b>AlphaX GRC</b><span>GRC &amp; Audit</span></div></div>' +
-      '<div><a class="link" href="/grc-home">&larr; ' + (S.lang === "ar" ? "الموقع" : "Website") + '</a> &nbsp; <button class="btn ghost sm" data-act="lang">' + t("language") + "</button></div></div>" + inner + "</div></div>";
+      '<div><a class="link" href="/grc-home">&larr; ' + (S.lang === "ar" ? "الموقع" : "Website") + '</a> &nbsp; ' + langSwitch() + "</div></div>" + inner + "</div></div>";
   }
   function render(html) { $("#app").innerHTML = html; window.scrollTo(0, 0); }
   function field(id, label, opts) {
@@ -219,8 +224,10 @@
     var openReq = clar.filter(function (c) { return c.kind === "Request" && c.status === "Open"; });
 
     var h = '<header class="ph"><div><a class="link" href="#/assessments">&larr; ' + t("assessments") + "</a><h1>" + esc(S.lang === "ar" && snap.template_name_ar || snap.template_name) + "</h1><div>" + badge(a.status) + ' <small class="muted">' + esc(a.name) + "</small></div></div>" +
-      '<div class="ph-r"><button class="btn sm" data-act="activity">' + t("activity") + '</button> <span id="savestate" class="savestate"></span>' + (a.released ? '<a class="btn" href="#/assessments/' + a.name + '/scorecard">' + t("scorecard") + "</a>" : "") + "</div></header>";
+      '<div class="ph-r"><button class="btn sm" data-pdf-resp="en">' + t("dl_answers") + ' PDF</button> <button class="btn sm" data-act="activity">' + t("activity") + '</button> <span id="savestate" class="savestate"></span>' + (a.released ? '<a class="btn" href="#/assessments/' + a.name + '/scorecard">' + t("scorecard") + "</a>" : "") + "</div></header>";
     h += '<section class="card" id="activity-box" hidden></section>';
+    if (a.can_edit && ["Submitted", "Under Review", "Resubmitted"].indexOf(a.status) > -1) h += '<section class="card"><b>' + t("change_title") + '</b><p class="muted">' + t("change_text") + '</p><textarea id="chg" rows="2" placeholder="' + t("change_ph") + '"></textarea><button class="btn sm primary" data-act="reqchange">' + t("change_send") + "</button></section>";
+    h += '<p class="muted"><a class="link" href="#/messages/' + a.name + '">' + t("msg_about") + "</a></p>";
     if (!edit) h += '<p class="note">' + (a.can_edit ? t("readonly") : t("viewer_note")) + "</p>";
     h += '<p class="muted next">' + t("na_" + a.next_action) + "</p>";
     h += '<div class="prog wide"><i style="width:' + Math.round(done / total * 100) + '%"></i></div><small class="muted">' + done + " " + t("of") + " " + total + " " + t("answered") + "</small>";
@@ -331,8 +338,7 @@
         field("g_cn", t("contact_name"), { value: o.primary_contact_name, readonly: ro }) + field("g_ce", t("contact_email"), { value: o.primary_contact_email, readonly: ro, dir: "ltr" }) + "</div>" +
         (admin ? '<button class="btn primary" type="submit">' + t("save") + "</button>" : '<p class="muted">' + t("only_admin") + "</p>") + "</form>" +
         '<section class="card"><h3>' + t("notif_title") + '</h3><p class="muted">' + t("notif_text") + '</p><label class="chk"><input type="checkbox" data-notify="me"' + (S.ctx.membership.notify_me ? " checked" : "") + "> " + t("notif_me") + "</label>" +
-        (admin ? '<label class="chk"><input type="checkbox" data-notify="org"' + (S.ctx.membership.notify_org ? " checked" : "") + "> " + t("notif_org") + "</label>" : "") + "</section>" +
-        '<p><a class="btn" href="#/neworg">' + t("add_org") + "</a></p>";
+        (admin ? '<label class="chk"><input type="checkbox" data-notify="org"' + (S.ctx.membership.notify_org ? " checked" : "") + "> " + t("notif_org") + "</label>" : "") + "</section>";
       render(shell("organization", h));
       if (ro) $$("#f-org select").forEach(function (s) { s.disabled = true; });
       var f = $("#f-org");
@@ -393,10 +399,44 @@
     }).catch(fail);
   }
 
+
+  function viewOrganizations() {
+    api("portal.list_organizations").then(function (rows) {
+      var h = '<header class="ph"><div><h1>' + t("my_orgs") + '</h1><p class="muted">' + t("my_orgs_text") + '</p></div><a class="btn primary" href="#/neworg">' + t("add_org") + "</a></header>";
+      h += '<div class="tablewrap"><table class="tbl"><thead><tr><th>' + t("switch_org") + "</th><th>" + t("role") + "</th><th>" + t("assessments") + "</th><th>" + t("kpi_released") + '</th><th></th></tr></thead><tbody>' + rows.map(function (o) {
+        return "<tr><td><b>" + esc(S.lang === "ar" && o.legal_name_ar || o.legal_name) + "</b>" + (o.active ? ' <span class="badge">' + t("current") + "</span>" : "") + (o.parent ? "<br><small>" + t("is_sub") + "</small>" : "") + "</td><td>" + t("r_" + o.role.replace(/ /g, "_")) + "</td><td>" + o.assessments + " (" + o.open + " " + t("open_n") + ")</td><td>" + o.released + '</td><td class="r">' + (o.active ? "" : '<button class="btn sm" data-switch-btn="1">' + t("switch_to") + "</button>") + "</td></tr>";
+      }).join("") + "</tbody></table></div>";
+      render(shell("organizations", h));
+      $$("[data-switch-btn]").forEach(function (b, i) { var o = rows.filter(function (x) { return !x.active; })[i]; b.value = o.name; b.addEventListener("click", function () { api("portal.switch_organization", { organization: o.name }).then(function (c) { S.ctx = c; S.asm = null; go("#/dashboard"); }).catch(fail); }); });
+    }).catch(fail);
+  }
+
+  function viewMessages(aname) {
+    aname = aname || (location.hash.split("/")[2] || null);
+    api("portal.list_messages", aname ? { assessment: aname } : {}).then(function (rows) {
+      if (S.ctx && S.ctx.unread_messages) S.ctx.unread_messages = 0;
+      var h = '<header class="ph"><div><h1>' + t("msgs") + '</h1><p class="muted">' + t("msgs_text") + (S.ctx.support_email ? " " + t("msgs_email") + ' <a href="mailto:' + esc(S.ctx.support_email) + '">' + esc(S.ctx.support_email) + "</a>." : "") + "</p></div>" + (aname ? '<a class="btn sm" href="#/messages">' + t("all_msgs") + "</a>" : "") + "</header>";
+      h += '<section class="card thread">' + (rows.length ? rows.map(function (r) {
+        return '<div class="msg ' + (r.sender_type === "Staff" ? "them" : "me") + '"><small><b>' + esc(r.sender_name) + "</b> &middot; " + esc(String(r.creation).slice(0, 16)) + (r.kind === "Change Request" ? " &middot; " + t("change_title") : "") + (r.assessment ? " &middot; " + esc(r.assessment) : "") + "</small><div>" + esc(r.body).replace(/\n/g, "<br>") + "</div></div>";
+      }).join("") : '<p class="empty">' + t("msgs_empty") + "</p>") + "</section>";
+      h += '<section class="card"><textarea id="msgbody" rows="3" placeholder="' + t("msg_ph") + '"></textarea><button class="btn primary" data-act="sendmsg" data-a="' + esc(aname || "") + '">' + t("msg_send") + "</button></section>";
+      render(shell("messages", h));
+    }).catch(fail);
+  }
+
+  function viewProfile() {
+    var p = S.ctx.profile || {};
+    var h = '<header class="ph"><h1>' + t("profile") + '</h1></header><section class="card"><div class="grid2">' + field("pf_name", t("full_name"), { value: S.ctx.full_name }) + field("pf_email", t("email"), { value: S.ctx.user, readonly: true, dir: "ltr" }) + field("pf_mobile", t("mobile"), { value: p.mobile_no || "", dir: "ltr" }) +
+      '<div class="f"><label>' + t("lang_label") + "</label>" + langSwitch() + '<small class="hint muted">' + t("lang_hint") + "</small></div></div>" +
+      '<button class="btn primary" data-act="saveprofile">' + t("save") + '</button></section><section class="card"><h3>' + t("change_pw") + '</h3><div class="grid2">' + field("pw_old", t("pw_old"), { type: "password" }) + "<div></div>" + field("pw_new", t("pw_new"), { type: "password", hint: t("pw_hint") }) + field("pw_new2", t("pw_new2"), { type: "password" }) +
+      '</div><button class="btn primary" data-act="savepw">' + t("change_pw") + "</button></section>";
+    render(shell("profile", h));
+  }
+
   function viewSetup() {
     var sectors = (S.cfg && S.cfg.sectors || []).map(function (s) { return { v: s, l: s }; });
     var staff = S.ctx.is_staff;
-    render('<div class="auth"><div class="auth-card"><div class="auth-top"><div class="brand dark"><img src="/assets/alphax_grc/images/alphax_icon.png" alt=""><div><b>AlphaX GRC</b><span>GRC &amp; Audit</span></div></div><div><button class="btn ghost sm" data-act="lang">' + t("language") + '</button> <button class="btn ghost sm" data-act="logout">' + t("signout") + "</button></div></div>" +
+    render('<div class="auth"><div class="auth-card"><div class="auth-top"><div class="brand dark"><img src="/assets/alphax_grc/images/alphax_icon.png" alt=""><div><b>AlphaX GRC</b><span>GRC &amp; Audit</span></div></div><div>' + langSwitch() + ' <button class="btn ghost sm" data-act="logout">' + t("signout") + "</button></div></div>" +
       (staff ? "<h1>" + t("welcome") + '</h1><p class="note">' + t("staff_note") + '</p><p class="muted"><b>' + esc(S.ctx.full_name) + "</b> &middot; " + esc((S.ctx.staff_roles || []).join(", ")) + "<br><small>" + t("staff_customer_hint") + '</small></p><a class="btn primary" href="/app">' + t("open_desk") + "</a>" :
         "<h1>" + t("setup_org") + "</h1><p>" + t("setup_org_text") + '</p><form id="f-setup" novalidate><div class="grid2">' + field("o_legal", t("legal_name"), { dir: "ltr" }) + field("o_legal_ar", t("legal_name_ar"), { dir: "rtl" }) + field("o_sector", t("sector"), { options: sectors }) + field("o_city", t("city")) + "</div>" +
         '<button class="btn primary" type="submit">' + t("save") + '</button></form><p class="aux">' + t("join_with_invite") + "</p>") + "</div></div>");
@@ -409,10 +449,14 @@
 
   // ---------------------------------------------------------------- events
   document.addEventListener("click", function (e) {
-    var el = e.target.closest("[data-act],[data-sec],[data-sec-go],[data-reply],[data-dl],[data-del],[data-pdf],[data-rm],[data-revoke]");
+    var el = e.target.closest("[data-act],[data-pdf-resp],[data-sec],[data-sec-go],[data-reply],[data-dl],[data-del],[data-pdf],[data-rm],[data-revoke]");
     if (!el) return;
     var act = el.getAttribute("data-act");
-    if (act === "lang") { S.lang = S.lang === "ar" ? "en" : "ar"; applyLang(); if (S.ctx) api("portal.set_language", { language: S.lang }).catch(function () {}); route(true); return; }
+    if (act === "lang") { var nl = el.getAttribute("data-l") || (S.lang === "ar" ? "en" : "ar"); if (nl === S.lang) return; S.lang = nl; applyLang(); if (S.ctx) api("portal.set_language", { language: S.lang }).catch(function () {}); route(true); return; }
+    if (act === "reqchange") { var cv = ($("#chg") || {}).value; if (!cv || !cv.trim()) return toast(t("change_ph"), true); busy(el, true); api("portal.request_change", { name: S.asm.name, message: cv }).then(function () { toast(t("change_sent")); $("#chg").value = ""; busy(el, false); }).catch(function (er) { busy(el, false); fail(er); }); return; }
+    if (act === "sendmsg") { var mv = ($("#msgbody") || {}).value; if (!mv || !mv.trim()) return; busy(el, true); api("portal.send_message", { body: mv, assessment: el.getAttribute("data-a") || null }).then(function () { viewMessages(el.getAttribute("data-a") || null); }).catch(function (er) { busy(el, false); fail(er); }); return; }
+    if (act === "saveprofile") { busy(el, true); api("portal.update_profile", { full_name: val("pf_name"), mobile_no: val("pf_mobile") }).then(function (c) { S.ctx = c; busy(el, false); toast(t("saved_ok")); route(); }).catch(function (er) { busy(el, false); fail(er); }); return; }
+    if (act === "savepw") { if (val("pw_new") !== val("pw_new2")) return toast(t("pw_mismatch"), true); busy(el, true); api("portal.change_password", { old_password: val("pw_old"), new_password: val("pw_new") }).then(function () { busy(el, false); ["pw_old", "pw_new", "pw_new2"].forEach(function (i) { document.getElementById(i).value = ""; }); toast(t("pw_changed")); }).catch(function (er) { busy(el, false); fail(er); }); return; }
     if (act === "logout") { fetch("/api/method/logout", { method: "POST", headers: { "X-Frappe-CSRF-Token": window.GRC.csrf }, credentials: "same-origin" }).then(function () { window.location.href = "/grc"; }); return; }
     if (act === "resend") { S.reg.step = 1; var rb = el; busy(rb, true); api("auth.register_start", { email: S.reg.email, full_name: S.reg.name, language: S.lang, invite_token: ((new URLSearchParams(window.location.search)).get("invite")) || null }).then(function (r) { S.reg.test_code = r.test_code; S.reg.step = 2; toast(t("code_resent")); viewRegister(); }).catch(function (er) { S.reg.step = 2; busy(rb, false); fail(er); }); return; }
     if (act === "activity") {
@@ -440,6 +484,7 @@
     }
     if (el.hasAttribute("data-dl")) { e.preventDefault(); download("portal.download_evidence", { file_id: el.getAttribute("data-dl") }); return; }
     if (el.hasAttribute("data-del")) { if (!window.confirm(t("delete") + "?")) return; api("portal.delete_evidence", { file_id: el.getAttribute("data-del") }).then(function () { refreshAssessment(true); }).catch(fail); return; }
+    if (el.hasAttribute("data-pdf-resp")) { download("portal.download_responses", { name: S.asm.name, lang: S.lang }); return; }
     if (el.hasAttribute("data-pdf")) { download("portal.download_report", { name: location.hash.split("/")[2], lang: el.getAttribute("data-pdf") }); return; }
     if (el.hasAttribute("data-rm")) { if (!window.confirm(t("confirm_remove"))) return; api("portal.remove_member", { name: el.getAttribute("data-rm") }).then(viewMembers).catch(fail); return; }
     if (el.hasAttribute("data-revoke")) { api("portal.revoke_invitation", { name: el.getAttribute("data-revoke") }).then(viewMembers).catch(fail); return; }
@@ -458,7 +503,7 @@
         .then(function () { toast(t("saved")); refreshAssessment(true); }).catch(function (er) { toast(er.message, true); });
       return;
     }
-    if (el.hasAttribute && el.hasAttribute("data-switch")) { api("portal.switch_organization", { organization: el.value }).then(function (c) { S.ctx = c; S.asm = null; if (location.hash === "#/dashboard") route(); else go("#/dashboard"); }).catch(fail); return; }
+    if (el.hasAttribute && (el.hasAttribute("data-switch") || el.hasAttribute("data-switch-btn"))) { api("portal.switch_organization", { organization: el.value }).then(function (c) { S.ctx = c; S.asm = null; if (location.hash === "#/dashboard") route(); else go("#/dashboard"); }).catch(fail); return; }
     if (el.hasAttribute && el.hasAttribute("data-notify")) { var k = el.getAttribute("data-notify"); api("portal.set_notifications", k === "me" ? { for_me: el.checked ? 1 : 0 } : { for_org: el.checked ? 1 : 0 }).then(function (c) { S.ctx = c; toast(t("saved_ok")); }).catch(function (er) { el.checked = !el.checked; fail(er); }); return; }
     if (el.hasAttribute && el.hasAttribute("data-role")) { api("portal.change_member_role", { name: el.getAttribute("data-role"), role: el.value }).then(function () { toast(t("saved_ok")); }).catch(function (er) { fail(er); viewMembers(); }); }
   });
@@ -484,6 +529,9 @@
       case "assessments": return viewAssessments();
       case "organization": return viewOrganization();
       case "neworg": return viewNewOrg();
+      case "organizations": return viewOrganizations();
+      case "messages": return viewMessages();
+      case "profile": return viewProfile();
       case "group": return viewGroup();
       case "members": return viewMembers();
       default: return viewDashboard();

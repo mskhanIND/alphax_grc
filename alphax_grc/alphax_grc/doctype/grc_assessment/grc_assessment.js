@@ -12,6 +12,13 @@ frappe.ui.form.on("GRC Assessment", {
     }, group || __("Review"));
     const s = frm.doc.status;
     if (["Submitted", "Resubmitted"].includes(s)) add(__("Start Review"), "start_review");
+    if (["Submitted", "Under Review", "Resubmitted"].includes(s)) {
+      frm.add_custom_button(__("Return to Customer for Edit"), () => {
+        frappe.prompt([{ fieldname: "message", label: __("What should the customer change?"), fieldtype: "Small Text", reqd: 1 }],
+          (v) => call("request_clarification", null, JSON.stringify([{ question_code: "", message: v.message }])),
+          __("Return to Customer for Edit"));
+      }, __("Review"));
+    }
     if (s === "Under Review") {
       frm.add_custom_button(__("Request Clarification"), () => {
         frappe.prompt([{ fieldname: "question_code", label: __("Question code (optional)"), fieldtype: "Data" },

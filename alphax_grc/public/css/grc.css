@@ -73,3 +73,10 @@ input[readonly]{background:var(--bg)}textarea{resize:vertical}.hint{display:bloc
 .kpi.k2{border-top-color:#2563eb}.kpi.k3{border-top-color:var(--ok)}.kpi small{display:block;font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:.72rem}.kpi b{display:block;font-size:2.1rem;line-height:1.2;font-weight:800;margin:.2rem 0}.kpi span{color:var(--muted);font-size:.85rem}
 .card{border-radius:12px}.btn.primary{border-radius:9px}.tbl th{text-transform:uppercase;letter-spacing:.03em;font-size:.72rem;color:var(--muted)}
 .card .prog+small{display:block;margin-bottom:.7rem}
+
+.seg{display:inline-flex;border:1px solid rgba(255,255,255,.35);border-radius:9px;overflow:hidden}.seg button{background:transparent;color:inherit;border:0;padding:.3rem .65rem;font:inherit;font-weight:700;font-size:.82rem;cursor:pointer;min-height:32px}
+.seg button[aria-pressed=true]{background:var(--brand);color:#fff}.card .seg,.main .seg,.auth .seg{border-color:var(--line);color:var(--ink)}
+.orgone{background:rgba(255,255,255,.08);border-radius:8px;padding:.5rem .7rem;font-weight:600}.orgsw select{min-height:38px}
+a.who{display:flex;gap:.6rem;align-items:center;color:#fff;text-decoration:none;padding:.4rem;border-radius:8px}a.who:hover{background:rgba(255,255,255,.1)}a.who strong{display:block}a.who small{color:#BFD8DE;word-break:break-all}
+.dot{margin-inline-start:auto;background:#dc2626;color:#fff;border-radius:10px;font-size:.7rem;padding:0 .45rem}
+.thread{max-height:55vh;overflow:auto}
